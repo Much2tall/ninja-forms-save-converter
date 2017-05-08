@@ -96,7 +96,7 @@ function nf_old_subs_table_row_actions_filter( $actions, $sub_id, $form_id ) {
 add_filter( 'nf_sub_table_row_actions', 'nf_old_subs_table_row_actions_filter', 10, 3 );
 
 /**
- * ninja_forms_get_subs() has been deprecated in favour of Ninja_Forms()->subs()->get( $args ) or Ninja_Forms()->form( 23 )->get_subs( $args )
+ * ninja_forms_get_subs() has been deprecated in favour of NF_SaveConverter()->subs()->get( $args ) or NF_SaveConverter()->form( 23 )->get_subs( $args )
  * You can also use WordPress queries ,since this is a custom post type.
  * 
  * @since 2.7
@@ -186,7 +186,7 @@ function ninja_forms_get_subs( $args = array() ) {
 }
 
 /**
- * ninja_forms_get_sub_count() has been deprecated in favour of Ninja_Forms()->form( 23 )->sub_count or nf_get_sub_count()
+ * ninja_forms_get_sub_count() has been deprecated in favour of NF_SaveConverter()->form( 23 )->sub_count or nf_get_sub_count()
  * Function that returns a count of the number of submissions.
  *
  * @since 2.7
@@ -197,13 +197,13 @@ function ninja_forms_get_sub_count( $args = array() ) {
 }
 
 /**
- * ninja_forms_get_sub_by_id( $sub_id ) has been deprecated in favour of Ninja_Forms()->sub( 23 );
+ * ninja_forms_get_sub_by_id( $sub_id ) has been deprecated in favour of NF_SaveConverter()->sub( 23 );
  * 
  * @since 2.7
  */
 
 function ninja_forms_get_sub_by_id( $sub_id ) {
-	$sub = Ninja_Forms()->sub( $sub_id );
+	$sub = NF_SaveConverter()->sub( $sub_id );
 	if ( $sub ) {
 		$sub_row = array();
 		$data = array();
@@ -238,7 +238,7 @@ function ninja_forms_get_sub_by_id( $sub_id ) {
 }
 
 /**
- * ninja_forms_get_all_subs() has been deprecated in favour of Ninja_Forms()->subs()->get();
+ * ninja_forms_get_all_subs() has been deprecated in favour of NF_SaveConverter()->subs()->get();
  * 
  * @since 2.7
  */
@@ -252,7 +252,7 @@ function ninja_forms_get_sub_by_id( $sub_id ) {
 }
 
 /**
- * ninja_forms_insert_sub() has been deprecated in favour of Ninja_Forms()->subs()->create( $form_id );
+ * ninja_forms_insert_sub() has been deprecated in favour of NF_SaveConverter()->subs()->create( $form_id );
  * Because submissions are now a CPT, this function will only return false. 
  * Please replace any instances of this function with the replacement.
  * 
@@ -266,7 +266,7 @@ function ninja_forms_insert_sub( $args ) {
 
 	$form_id = $args['form_id'];
 	
-	$sub_id = Ninja_Forms()->subs()->create( $form_id );
+	$sub_id = NF_SaveConverter()->subs()->create( $form_id );
 	$args['sub_id'] = $sub_id;
 
 	ninja_forms_update_sub( $args );
@@ -275,7 +275,7 @@ function ninja_forms_insert_sub( $args ) {
 }
 
 /**
- * ninja_forms_update_sub() has been deprecated in favour of Ninja_Forms()->sub( 23 )->update_field( id, value );
+ * ninja_forms_update_sub() has been deprecated in favour of NF_SaveConverter()->sub( 23 )->update_field( id, value );
  * Because submissions are now a CPT, this function will only return false. 
  * Please replace any instances of this function with the replacement.
  * 
@@ -287,7 +287,7 @@ function ninja_forms_update_sub( $args ){
 		return false;
 
 	$sub_id = $args['sub_id'];
-	$sub = Ninja_Forms()->sub( $sub_id );
+	$sub = NF_SaveConverter()->sub( $sub_id );
 
 	if ( isset ( $args['data'] ) ) {
 		$data = $args['data'];
@@ -311,15 +311,15 @@ function ninja_forms_update_sub( $args ){
 }
 
 /**
- * ninja_forms_export_subs_to_csv() has been deprecated in favour of Ninja_Forms()->subs()->export( sub_ids, return );
- * or Ninja_Forms()->sub( 23 )->export( return );
+ * ninja_forms_export_subs_to_csv() has been deprecated in favour of NF_SaveConverter()->subs()->export( sub_ids, return );
+ * or NF_SaveConverter()->sub( 23 )->export( return );
  * Please replace any instances of this function with the replacement.
  * 
  * @since 2.7
  */
 
 function ninja_forms_export_subs_to_csv( $sub_ids = '', $return = false ){
-	Ninja_Forms()->subs()->export( $sub_ids, $return );
+	NF_SaveConverter()->subs()->export( $sub_ids, $return );
 }
 
 function ninja_forms_implode_r($glue, $pieces){
@@ -709,7 +709,7 @@ function nf_csv_attachment( $sub_id ){
 	if( 1 == $ninja_forms_processing->get_form_setting( 'admin_attach_csv' ) AND 'submit' == $ninja_forms_processing->get_action() ) {
 		
 		// create CSV content
-		$csv_content = Ninja_Forms()->sub( $sub_id )->export( true );
+		$csv_content = NF_SaveConverter()->sub( $sub_id )->export( true );
 		
 		$upload_dir = wp_upload_dir();
 		$path = trailingslashit( $upload_dir['path'] );
@@ -751,11 +751,11 @@ function nf_csv_attachment( $sub_id ){
 function nf_modify_attachments( $files, $n_id ) {
 	global $ninja_forms_processing;
 
-	if ( Ninja_Forms()->notification( $n_id )->get_setting( 'admin_email' ) ) {
+	if ( NF_SaveConverter()->notification( $n_id )->get_setting( 'admin_email' ) ) {
 		if ( is_array( $ninja_forms_processing->get_form_setting( 'admin_attachments' ) ) ) {
 			$files = array_merge( $files, $ninja_forms_processing->get_form_setting( 'admin_attachments' ) );
 		}
-	} else if ( Ninja_Forms()->notification( $n_id )->get_setting( 'user_email' ) ) {
+	} else if ( NF_SaveConverter()->notification( $n_id )->get_setting( 'user_email' ) ) {
 		if ( is_array( $ninja_forms_processing->get_form_setting( 'user_attachments' ) ) ) {
 			$files = array_merge( $files, $ninja_forms_processing->get_form_setting( 'user_attachments' ) );
 		}
@@ -864,8 +864,8 @@ function nf_get_form_settings( $form_id ) {
  * @return array $form
  */
 function ninja_forms_get_form_by_id( $form_id ) {
-	$settings = Ninja_Forms()->form( $form_id )->get_all_settings();
-	$date_updated = Ninja_Forms()->form( $form_id )->get_setting( 'date_updated' );
+	$settings = NF_SaveConverter()->form( $form_id )->get_all_settings();
+	$date_updated = NF_SaveConverter()->form( $form_id )->get_setting( 'date_updated' );
 	return array( 'id' => $form_id, 'data' => $settings, 'date_updated' => $date_updated );
 }
 
@@ -908,7 +908,7 @@ function ninja_forms_delete_form( $form_id = '' ){
 		$ajax = false;
 	}
 
-	Ninja_Forms()->form( $form_id )->delete();
+	NF_SaveConverter()->form( $form_id )->delete();
 
 	if( $ajax ){
 		die();
@@ -918,14 +918,14 @@ function ninja_forms_delete_form( $form_id = '' ){
 add_action('wp_ajax_ninja_forms_delete_form', 'ninja_forms_delete_form');
 
 function ninja_forms_get_all_forms( $debug = false ){
-	$forms = Ninja_Forms()->forms()->get_all();
+	$forms = NF_SaveConverter()->forms()->get_all();
 
 	$tmp_array = array();
 	$x = 0;
 	foreach ( $forms as $form_id ) {
 		$tmp_array[ $x ]['id'] = $form_id;
-		$tmp_array[ $x ]['data'] = Ninja_Forms()->form( $form_id )->get_all_settings();
-		$tmp_array[ $x ]['name'] = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+		$tmp_array[ $x ]['data'] = NF_SaveConverter()->form( $form_id )->get_all_settings();
+		$tmp_array[ $x ]['name'] = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
 		$x++;
 	}
 
@@ -942,7 +942,7 @@ function ninja_forms_get_all_forms( $debug = false ){
 function nf_get_form_count() {
 	global $wpdb;
 
-	$forms = Ninja_Forms()->forms()->get_all();
+	$forms = NF_SaveConverter()->forms()->get_all();
 	return count( $forms );
 }
 
@@ -960,17 +960,17 @@ function ninja_forms_update_form( $args ){
 		$data = maybe_unserialize( $update_array['data'] );
 		if ( is_array( $data ) ) {
 			foreach ( $data as $key => $val ) {
-				Ninja_Forms()->form( $form_id )->update_setting( $key, $val );
+				NF_SaveConverter()->form( $form_id )->update_setting( $key, $val );
 			}	
 		}
 		unset( $update_array['data'] );	
 	}
 
 	foreach ( $update_array as $key => $val ) {
-		Ninja_Forms()->form( $form_id )->update_setting( $key, $val );
+		NF_SaveConverter()->form( $form_id )->update_setting( $key, $val );
 	}
 
-	Ninja_Forms()->form( $form_id )->dump_cache();
+	NF_SaveConverter()->form( $form_id )->dump_cache();
 	
 }
 

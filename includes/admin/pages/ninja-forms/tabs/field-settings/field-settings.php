@@ -83,7 +83,7 @@ function nf_create_form_listen() {
 			'show_title'		=> 0,
 			'status'			=> 'new',
 		) );
-		$form_id = Ninja_Forms()->form()->create( $defaults );
+		$form_id = NF_SaveConverter()->form()->create( $defaults );
 		$redirect = esc_url_raw( add_query_arg( array( 'form_id' => $form_id ) ) );
 		wp_redirect( $redirect );
 		die();		

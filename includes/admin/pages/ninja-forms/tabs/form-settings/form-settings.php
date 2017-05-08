@@ -19,7 +19,7 @@ function ninja_forms_register_form_settings_basic_metabox(){
 
 	if( isset( $_REQUEST['form_id'] ) ){
 		$form_id = absint( $_REQUEST['form_id'] );
-		$form_data = Ninja_Forms()->form( $form_id )->get_all_settings();
+		$form_data = NF_SaveConverter()->form( $form_id )->get_all_settings();
 	}else{
 		$form_id = '';
 		$form_row = '';
@@ -154,7 +154,7 @@ function ninja_forms_save_form_settings( $form_id, $data ){
 		if ( 'form_title' == $key ) {
 			$val = esc_html( $val );
 		}
-		Ninja_Forms()->form( $form_id )->update_setting( $key, $val );
+		NF_SaveConverter()->form( $form_id )->update_setting( $key, $val );
 	}
 
 	$update_msg = __( 'Form Settings Saved', 'ninja-forms' );

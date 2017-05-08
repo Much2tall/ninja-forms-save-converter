@@ -95,7 +95,7 @@ class NF_THREE_Submenu
      */
     public function display()
     {
-        $all_forms = Ninja_Forms()->forms()->get_all();
+        $all_forms = NF_SaveConverter()->forms()->get_all();
 
         wp_enqueue_style( 'ninja-forms-three-upgrade-styles', plugin_dir_url(__FILE__) . 'upgrade.css' );
 
@@ -116,8 +116,8 @@ class NF_THREE_Submenu
 
         $can_upgrade = TRUE;
 
-        $fields = Ninja_Forms()->form( $form_id )->fields;
-        $settings = Ninja_Forms()->form( $form_id )->get_all_settings();
+        $fields = NF_SaveConverter()->form( $form_id )->fields;
+        $settings = NF_SaveConverter()->form( $form_id )->get_all_settings();
 
         foreach( $fields as $field ){
             if( '_calc' == $field[ 'type' ] ){

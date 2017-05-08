@@ -70,7 +70,7 @@ abstract class NF_Notification_Base_Type
 
 		$setting_name = $setting;
 
-		$setting = explode( '`', Ninja_Forms()->notification( $id )->get_setting( $setting ) );
+		$setting = explode( '`', NF_SaveConverter()->notification( $id )->get_setting( $setting ) );
 
 		for ( $x = 0; $x <= count ( $setting ) - 1; $x++ ) {
 			if ( strpos( $setting[ $x ], 'field_' ) !== false ) {

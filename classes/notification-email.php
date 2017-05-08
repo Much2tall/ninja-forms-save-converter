@@ -27,7 +27,7 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 	 * @return void
 	 */
 	public function edit_screen( $id = '' ) {
-		$form_id = ( '' != $id ) ? Ninja_Forms()->notification( $id )->form_id : '';
+		$form_id = ( '' != $id ) ? NF_SaveConverter()->notification( $id )->form_id : '';
 
 		if ( $id == '' ) {
 			$email_format = 'html';
@@ -40,15 +40,15 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 			$email_subject = '';
 			$email_message = '';
 		} else {
-			$email_format = Ninja_Forms()->notification( $id )->get_setting( 'email_format' );
-			$from_name = Ninja_Forms()->notification( $id )->get_setting( 'from_name' );
-			$from_address = Ninja_Forms()->notification( $id )->get_setting( 'from_address' );
-			$reply_to = Ninja_Forms()->notification( $id )->get_setting( 'reply_to' );
-			$to = Ninja_Forms()->notification( $id )->get_setting( 'to' );
-			$cc = Ninja_Forms()->notification( $id )->get_setting( 'cc' );
-			$bcc = Ninja_Forms()->notification( $id )->get_setting( 'bcc' );
-			$email_subject = Ninja_Forms()->notification( $id )->get_setting( 'email_subject' );
-			$email_message = Ninja_Forms()->notification( $id )->get_setting( 'email_message' );
+			$email_format = NF_SaveConverter()->notification( $id )->get_setting( 'email_format' );
+			$from_name = NF_SaveConverter()->notification( $id )->get_setting( 'from_name' );
+			$from_address = NF_SaveConverter()->notification( $id )->get_setting( 'from_address' );
+			$reply_to = NF_SaveConverter()->notification( $id )->get_setting( 'reply_to' );
+			$to = NF_SaveConverter()->notification( $id )->get_setting( 'to' );
+			$cc = NF_SaveConverter()->notification( $id )->get_setting( 'cc' );
+			$bcc = NF_SaveConverter()->notification( $id )->get_setting( 'bcc' );
+			$email_subject = NF_SaveConverter()->notification( $id )->get_setting( 'email_subject' );
+			$email_message = NF_SaveConverter()->notification( $id )->get_setting( 'email_message' );
 		}
 
 		?>
@@ -106,7 +106,7 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 						if ( '' == $id ) {
 							$current_setting = 0;
 						} else {
-							$current_setting = Ninja_Forms()->notification( $id )->get_setting( $slug );
+							$current_setting = NF_SaveConverter()->notification( $id )->get_setting( $slug );
 						}
 
 						?>
@@ -233,8 +233,8 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 		$form_id 		= $ninja_forms_processing->get_form_ID();
 		$form_title 	= $ninja_forms_processing->get_form_setting( 'form_title' );
 
-		$email_format 	= Ninja_Forms()->notification( $id )->get_setting( 'email_format' );
-		$attach_csv 	= Ninja_Forms()->notification( $id )->get_setting( 'attach_csv' );
+		$email_format 	= NF_SaveConverter()->notification( $id )->get_setting( 'email_format' );
+		$attach_csv 	= NF_SaveConverter()->notification( $id )->get_setting( 'attach_csv' );
 
 		$from_name 		= $this->process_setting( $id, 'from_name' );
 		$from_name 		= implode( ' ', $from_name );
@@ -315,7 +315,7 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 			$sub_id = $ninja_forms_processing->get_form_setting( 'sub_id' );
 
 			// create CSV content
-			$csv_content = Ninja_Forms()->sub( $sub_id )->export( true );
+			$csv_content = NF_SaveConverter()->sub( $sub_id )->export( true );
 
 			$upload_dir = wp_upload_dir();
 			$path = trailingslashit( $upload_dir['path'] );
@@ -397,7 +397,7 @@ class NF_Notification_Email extends NF_Notification_Base_Type
 		// save the setting name
 		$setting_name = $setting;
 
-		$format = Ninja_Forms()->notification( $id )->get_setting( 'email_format' );
+		$format = NF_SaveConverter()->notification( $id )->get_setting( 'email_format' );
 		if ( 'html' == $format )
 			$html = 1;
 

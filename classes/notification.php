@@ -3,7 +3,7 @@
  * Notification
  * 
  * Single notification object.
- * This object lets us call it like: Ninja_Forms()->notification( 33 )->methods()
+ * This object lets us call it like: NF_SaveConverter()->notification( 33 )->methods()
  *
  * @package     Ninja Forms
  * @subpackage  Classes/Notifications
@@ -61,7 +61,7 @@ class NF_Notification
 	public function edit_screen() {
 		$type = $this->type;
 		// Call our type edit screen.
-		Ninja_Forms()->notification_types[ $type ]->edit_screen( $this->id );
+		NF_SaveConverter()->notification_types[ $type ]->edit_screen( $this->id );
 	}
 
 	/**
@@ -107,7 +107,7 @@ class NF_Notification
 	 * @return int $n_id
 	 */
 	public function duplicate() {
-		$n_id = Ninja_Forms()->notifications->create( $this->form_id );
+		$n_id = NF_SaveConverter()->notifications->create( $this->form_id );
 		$meta = nf_get_notification_by_id( $this->id );
 		foreach ( $meta as $meta_key => $meta_value ) {
 			nf_update_object_meta( $n_id, $meta_key, $meta_value );
@@ -126,8 +126,8 @@ class NF_Notification
 	 */
 	public function process() {
 		$type = $this->type;
-		if ( isset ( Ninja_Forms()->notification_types[ $type ] ) && is_object( Ninja_Forms()->notification_types[ $type ] ) ) {
-			Ninja_Forms()->notification_types[ $type ]->process( $this->id );			
+		if ( isset ( NF_SaveConverter()->notification_types[ $type ] ) && is_object( NF_SaveConverter()->notification_types[ $type ] ) ) {
+			NF_SaveConverter()->notification_types[ $type ]->process( $this->id );			
 		}
 	}
 
@@ -164,7 +164,7 @@ class NF_Notification
 	public function type_name() {
 		$type = $this->type;
 		// Call our type edit screen.
-		return Ninja_Forms()->notification_types[ $type ]->name;
+		return NF_SaveConverter()->notification_types[ $type ]->name;
 	}
 
 }

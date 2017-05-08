@@ -1,11 +1,11 @@
 <?php if ( ! defined( 'ABSPATH' ) ) exit;
 
 function nf_get_settings(){
-  $instance = Ninja_Forms();
+  $instance = NF_SaveConverter();
   if ( ! empty ( $instance ) && ! empty ( $instance->plugin_settings ) ) {
-	$settings = Ninja_Forms()->plugin_settings;
+	$settings = NF_SaveConverter()->plugin_settings;
   } else {
-  	$settings = Ninja_Forms()->get_plugin_settings();
+  	$settings = NF_SaveConverter()->get_plugin_settings();
   }
 
   return $settings;

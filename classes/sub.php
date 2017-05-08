@@ -385,9 +385,9 @@ class NF_Sub {
 	 */
 	public function export( $return = false ){
 		if ( $return ) {
-			return Ninja_Forms()->subs()->export( $this->sub_id, $return );
+			return NF_SaveConverter()->subs()->export( $this->sub_id, $return );
 		} else {
-			Ninja_Forms()->subs()->export( $this->sub_id, $return );
+			NF_SaveConverter()->subs()->export( $this->sub_id, $return );
 		}
 	}
 

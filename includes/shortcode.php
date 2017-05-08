@@ -84,7 +84,7 @@ function nf_parse_sub_seq_num_shortcode( $setting, $setting_name = '', $id = '' 
 	if ( empty ( $sub_id ) )
 		return $setting;
 
-	$seq_num = Ninja_Forms()->sub( $sub_id )->get_seq_num();
+	$seq_num = NF_SaveConverter()->sub( $sub_id )->get_seq_num();
 	
 	$setting = str_replace( '[nf_sub_seq_num]', $seq_num, $setting );
 	return $setting;
@@ -198,7 +198,7 @@ function nf_parse_fields_shortcode( $content ) {
  * @return string sub_limit_number
  */
 function ninja_forms_display_sub_limit_number_shortcode( $atts ){
-  $form = Ninja_Forms()->form( $atts[ 'id' ] );
+  $form = NF_SaveConverter()->form( $atts[ 'id' ] );
   
   if ( isset( $form->settings[ 'sub_limit_number' ] ) ) {
     return $form->settings[ 'sub_limit_number' ];
@@ -232,7 +232,7 @@ add_shortcode( 'ninja_forms_display_sub_number', 'ninja_forms_display_sub_number
  * @see nf_get_sub_count()
  */
 function ninja_forms_display_sub_number_remaining_shortcode( $atts ){
-  $form = Ninja_Forms()->form($atts[ 'id' ]);
+  $form = NF_SaveConverter()->form($atts[ 'id' ]);
   
   if( isset( $form->settings[ 'sub_limit_number' ] ) ) {
     $sub_count = nf_get_sub_count( $atts[ 'id' ] );

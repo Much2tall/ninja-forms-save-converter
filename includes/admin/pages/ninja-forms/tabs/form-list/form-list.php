@@ -45,7 +45,7 @@ function ninja_forms_tab_form_list(){
 
 	do_action( 'nf_admin_before_form_list' );
 
-	$all_forms = apply_filters( 'ninja_forms_form_list_forms', Ninja_Forms()->forms()->get_all() );
+	$all_forms = apply_filters( 'ninja_forms_form_list_forms', NF_SaveConverter()->forms()->get_all() );
 
 	$form_count = count($all_forms);
 
@@ -165,7 +165,7 @@ function ninja_forms_tab_form_list(){
 	if(is_array($all_forms) AND !empty($all_forms) AND $current_page <= $page_count){
 		for ($i = $start; $i < $end; $i++) {
 			$form_id = $all_forms[$i];
-			$data = Ninja_Forms()->form( $form_id )->get_all_settings();
+			$data = NF_SaveConverter()->form( $form_id )->get_all_settings();
 			$date_updated = $data['date_updated'];
 			$date_updated = strtotime( $date_updated );
 			$date_updated = date_i18n( 'F d, Y', $date_updated );
@@ -230,7 +230,7 @@ function ninja_forms_save_form_list( $data ){
 			foreach( $data['form_ids'] as $form_id ){
 				switch( $data['bulk_action'] ){
 					case 'delete':
-						Ninja_Forms()->form( $form_id )->delete();
+						NF_SaveConverter()->form( $form_id )->delete();
 						$ninja_forms_admin_update_message = count( $data['form_ids'] ).' ';
 						if( count( $data['form_ids'] ) > 1 ){
 							$update_message = __( 'Forms Deleted', 'ninja-forms' );
@@ -245,7 +245,7 @@ function ninja_forms_save_form_list( $data ){
 			}
 		}
 		$debug = ! empty ( $_REQUEST['debug'] ) ? true : false;
-		Ninja_Forms()->forms()->update_cache( $debug );
+		NF_SaveConverter()->forms()->update_cache( $debug );
 		return $update_message;
 	}
 }

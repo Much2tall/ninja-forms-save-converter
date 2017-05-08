@@ -68,12 +68,12 @@ class NF_Admin_AddFormModal {
         <div id="nf-insert-form-modal" style="height:350px;">
             <p>
                 <?php
-                $all_forms = Ninja_Forms()->forms()->get_all();
+                $all_forms = NF_SaveConverter()->forms()->get_all();
                 $first_option = __( 'Select a form or type to search', 'ninja-forms' );
                 echo '<select class="nf-forms-combobox" id="nf_form_select" data-first-option="' . $first_option . '">';
                 echo '<option value="">' . $first_option .'</option>';
                 foreach( $all_forms as $form_id ) {
-                    $label = esc_html( Ninja_Forms()->form( $form_id )->get_setting( 'form_title' ) );
+                    $label = esc_html( NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' ) );
                     if ( strlen( $label ) > 30 )
                         $label = substr( $label, 0, 30 ) . '...';
 

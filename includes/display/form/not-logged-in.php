@@ -7,9 +7,9 @@
  * @return void
  */
 function nf_not_logged_in_msg( $form_id ) {
-	$not_logged_in = Ninja_Forms()->form( $form_id )->get_setting( 'logged_in' );
+	$not_logged_in = NF_SaveConverter()->form( $form_id )->get_setting( 'logged_in' );
 	if ( ! is_user_logged_in() && 1 == $not_logged_in ) {
-		$not_logged_in_msg = Ninja_Forms()->form( $form_id )->get_setting( 'not_logged_in_msg' );
+		$not_logged_in_msg = NF_SaveConverter()->form( $form_id )->get_setting( 'not_logged_in_msg' );
 		echo do_shortcode( $not_logged_in_msg );
 	}
 }

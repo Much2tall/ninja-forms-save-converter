@@ -65,7 +65,7 @@ function ninja_forms_get_form_ids_by_post_id( $post_id ){
 
 function ninja_forms_get_form_by_sub_id( $sub_id ){
 	global $wpdb;
-	$form_id = Ninja_Forms()->sub( $sub_id )->form_id;
+	$form_id = NF_SaveConverter()->sub( $sub_id )->form_id;
 	$form_row = ninja_forms_get_form_by_id( $form_id );
 	return $form_row;
 }
@@ -343,14 +343,14 @@ function ninja_forms_set_transient(){
 
 	$cache['field_settings'] = $all_fields_settings;
 
-	// Set errors and success messages as Ninja_Forms()->session variables.
+	// Set errors and success messages as NF_SaveConverter()->session variables.
 	$success = $ninja_forms_processing->get_all_success_msgs();
 	$errors = $ninja_forms_processing->get_all_errors();
 
 	$cache['success_msgs'] = $success;
 	$cache['error_msgs'] = $errors;
 
-	Ninja_Forms()->session->set( 'nf_cache', $cache );
+	NF_SaveConverter()->session->set( 'nf_cache', $cache );
 }
 
 /*
@@ -362,7 +362,7 @@ function ninja_forms_set_transient(){
  */
 
 function ninja_forms_delete_transient(){
-	Ninja_Forms()->session->delete();
+	NF_SaveConverter()->session->delete();
 }
 
 /**

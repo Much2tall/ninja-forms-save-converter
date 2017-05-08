@@ -22,9 +22,9 @@ class NF_Register
 	 * @return void
 	 */
 	public function notification_type( $slug, $nicename, $classname ) {
-		if ( ! empty( $slug ) && ! empty( $classname ) && ! isset ( Ninja_Forms()->registered_field_types[ $slug ] ) ) {
-			Ninja_Forms()->registered_notification_types[ $slug ]['nicename'] = $nicename;
-			Ninja_Forms()->registered_notification_types[ $slug ]['classname'] = $classname;
+		if ( ! empty( $slug ) && ! empty( $classname ) && ! isset ( NF_SaveConverter()->registered_field_types[ $slug ] ) ) {
+			NF_SaveConverter()->registered_notification_types[ $slug ]['nicename'] = $nicename;
+			NF_SaveConverter()->registered_notification_types[ $slug ]['classname'] = $classname;
 		}
 	}
 	

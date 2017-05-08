@@ -59,7 +59,7 @@ function ninja_forms_admin(){
 
 	if( isset ( $_REQUEST['form_id'] ) ) {
 		$form_id = absint( $_REQUEST['form_id'] );
-		$data = Ninja_Forms()->form( $form_id )->get_all_settings();
+		$data = NF_SaveConverter()->form( $form_id )->get_all_settings();
 		$form_title = isset ( $data['form_title'] ) ? $data['form_title'] : '';
 	}else{
 		$form_id = '';

@@ -72,7 +72,7 @@ class NF_Download_All_Subs extends NF_Step_Processing {
 			$x = 0;
 			$export = '';
 			foreach ( $subs_results as $sub ) {
-				$sub_export = Ninja_Forms()->sub( $sub->ID )->export( true );
+				$sub_export = NF_SaveConverter()->sub( $sub->ID )->export( true );
 				if ( $x > 0 || $this->step > 1 ) {
 					$sub_export = substr( $sub_export, strpos( $sub_export, "\n" ) + 1 );
 				}

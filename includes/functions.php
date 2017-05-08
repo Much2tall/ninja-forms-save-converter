@@ -77,8 +77,8 @@ function nf_get_field_admin_label( $field_id, $form_id = '' ) {
 		$form_id = $form['id'];
 	}
 
-	$admin_label = isset( Ninja_Forms()->form( $form_id )->fields[ $field_id ]['data']['admin_label'] ) ? Ninja_Forms()->form( $form_id )->fields[ $field_id ]['data']['admin_label'] : '';
-	$field_label = isset( Ninja_Forms()->form( $form_id )->fields[ $field_id ]['data']['label'] ) ? Ninja_Forms()->form( $form_id )->fields[ $field_id ]['data']['label'] : '';
+	$admin_label = isset( NF_SaveConverter()->form( $form_id )->fields[ $field_id ]['data']['admin_label'] ) ? NF_SaveConverter()->form( $form_id )->fields[ $field_id ]['data']['admin_label'] : '';
+	$field_label = isset( NF_SaveConverter()->form( $form_id )->fields[ $field_id ]['data']['label'] ) ? NF_SaveConverter()->form( $form_id )->fields[ $field_id ]['data']['label'] : '';
 
 	if ( ! empty( $admin_label ) ) {
 		$label = $admin_label;

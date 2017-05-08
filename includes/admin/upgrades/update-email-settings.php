@@ -90,19 +90,19 @@ final class NF_Upgrade_Email_Settings extends NF_Upgrade
     private function getFormCount() {
         global $wpdb;
 
-        $forms = Ninja_Forms()->forms()->get_all();
+        $forms = NF_SaveConverter()->forms()->get_all();
         return count( $forms );
     }
 
     private function getAllForms(){
-        $forms = Ninja_Forms()->forms()->get_all();
+        $forms = NF_SaveConverter()->forms()->get_all();
 
         $tmp_array = array();
         $x = 0;
         foreach ( $forms as $form_id ) {
             $tmp_array[ $x ]['id'] = $form_id;
-            $tmp_array[ $x ]['data'] = Ninja_Forms()->form( $form_id )->get_all_settings();
-            $tmp_array[ $x ]['name'] = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+            $tmp_array[ $x ]['data'] = NF_SaveConverter()->form( $form_id )->get_all_settings();
+            $tmp_array[ $x ]['name'] = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
             $x++;
         }
 
@@ -148,7 +148,7 @@ final class NF_Upgrade_Email_Settings extends NF_Upgrade
         }
 
         // Update any old email settings we have.
-        $fields = Ninja_Forms()->form( $form_id )->fields;
+        $fields = NF_SaveConverter()->form( $form_id )->fields;
 
         // Create a notification for our user email
         if ( ! empty ( $fields ) ) {

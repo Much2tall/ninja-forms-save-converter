@@ -22,7 +22,7 @@ function ninja_forms_preview_link( $form_id = '', $echo = true ) {
 
 	$form_data = ninja_forms_get_form_by_id( $form_id );
 
-	$append_page = Ninja_Forms()->form( $form_id )->get_setting( 'append_page' );
+	$append_page = NF_SaveConverter()->form( $form_id )->get_setting( 'append_page' );
 
 	if ( empty( $append_page ) ) {
 		$opt =  nf_get_settings();

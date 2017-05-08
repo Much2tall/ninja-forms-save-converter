@@ -59,9 +59,9 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
             return false;
 
         // Grab our form from the database
-        $form_settings = Ninja_Forms()->form( $form_id )->settings;
+        $form_settings = NF_SaveConverter()->form( $form_id )->settings;
 
-        $fields = Ninja_Forms()->form( $form_id )->fields;
+        $fields = NF_SaveConverter()->form( $form_id )->fields;
 
         $process_fields = array();
         foreach( $fields as $field_id => $field ) {
@@ -96,49 +96,49 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
             nf_update_object_meta( $n_id, 'type', 'email' );
 
             // Activate our notification
-            Ninja_Forms()->notification( $n_id )->activate();
+            NF_SaveConverter()->notification( $n_id )->activate();
 
             // Update our notification name
-            Ninja_Forms()->notification( $n_id )->update_setting( 'name', __( 'Admin Email', 'ninja-forms' ) );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'name', __( 'Admin Email', 'ninja-forms' ) );
 
             $admin_mailto = isset ( $form_settings['admin_mailto'] ) ? $form_settings['admin_mailto'] : array();
 
             // Implode our admin email addresses
             $to = implode('`', $admin_mailto );
             // Update our to setting
-            Ninja_Forms()->notification( $n_id )->update_setting( 'to', $to );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'to', $to );
 
             // Update our Format Setting
-            Ninja_Forms()->notification( $n_id )->update_setting( 'email_format', $form_settings['email_type'] );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'email_format', $form_settings['email_type'] );
 
             // Update our attach csv option
-            Ninja_Forms()->notification( $n_id )->update_setting( 'attach_csv', $form_settings['admin_attach_csv'] );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'attach_csv', $form_settings['admin_attach_csv'] );
 
             // Update our subject
             $subject = $this->replace_shortcodes( $form_settings['admin_subject'] );
 
-            Ninja_Forms()->notification( $n_id )->update_setting( 'email_subject', $subject );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'email_subject', $subject );
 
             // Update our From Name
             if ( isset ( $form_settings['email_from_name'] ) ) {
-                Ninja_Forms()->notification( $n_id )->update_setting( 'from_name', $form_settings['email_from_name'] );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'from_name', $form_settings['email_from_name'] );
             }
 
             foreach ( $fields as $field ) {
                 if ( isset ( $field['data']['from_name'] ) && $field['data']['from_name'] == 1 ) {
                     // Update our From Name
-                    Ninja_Forms()->notification( $n_id )->update_setting( 'from_name', 'field_' . $field['id'] );
+                    NF_SaveConverter()->notification( $n_id )->update_setting( 'from_name', 'field_' . $field['id'] );
                     break;
                 }
             }
 
             // Update our From Address
-            Ninja_Forms()->notification( $n_id )->update_setting( 'from_address', $form_settings['email_from'] );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'from_address', $form_settings['email_from'] );
 
             // Get our reply-to address
             foreach ( $fields as $field ) {
                 if ( isset ( $field['data']['replyto_email'] ) && $field['data']['replyto_email'] == 1 ) {
-                    Ninja_Forms()->notification( $n_id )->update_setting( 'reply_to', 'field_' . $field['id'] );
+                    NF_SaveConverter()->notification( $n_id )->update_setting( 'reply_to', 'field_' . $field['id'] );
                     break;
                 }
             }
@@ -151,9 +151,9 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
             }
 
             // Update our email message
-            Ninja_Forms()->notification( $n_id )->update_setting( 'email_message', $email_message );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'email_message', $email_message );
 
-            Ninja_Forms()->notification( $n_id )->update_setting( 'admin_email', true );
+            NF_SaveConverter()->notification( $n_id )->update_setting( 'admin_email', true );
         }
 
         // Create a notification for our user email
@@ -188,31 +188,31 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
                 nf_update_object_meta( $n_id, 'type', 'email' );
 
                 // Activate our notification
-                Ninja_Forms()->notification( $n_id )->activate();
+                NF_SaveConverter()->notification( $n_id )->activate();
 
                 // Update our notification name
-                Ninja_Forms()->notification( $n_id )->update_setting( 'name', __( 'User Email', 'ninja-forms' ) );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'name', __( 'User Email', 'ninja-forms' ) );
 
                 // Implode our admin email addresses
                 $n_var = count ( $addresses ) > 1 ? 'bcc' : 'to';
                 $addresses = implode( '`', $addresses );
-                Ninja_Forms()->notification( $n_id )->update_setting( $n_var, $addresses );
+                NF_SaveConverter()->notification( $n_id )->update_setting( $n_var, $addresses );
 
                 // Update our Format Setting
-                Ninja_Forms()->notification( $n_id )->update_setting( 'email_format', $form_settings['email_type'] );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'email_format', $form_settings['email_type'] );
 
                 // Update our subject
                 $subject = $this->replace_shortcodes( $form_settings['user_subject'] );
 
-                Ninja_Forms()->notification( $n_id )->update_setting( 'email_subject', $subject );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'email_subject', $subject );
 
                 // Update our From Name
                 if ( isset ( $form_settings['email_from_name'] ) ) {
-                    Ninja_Forms()->notification( $n_id )->update_setting( 'from_name', $form_settings['email_from_name'] );
+                    NF_SaveConverter()->notification( $n_id )->update_setting( 'from_name', $form_settings['email_from_name'] );
                 }
 
                 // Update our From Address
-                Ninja_Forms()->notification( $n_id )->update_setting( 'from_address', $form_settings['email_from'] );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'from_address', $form_settings['email_from'] );
 
                 $email_message = $form_settings['user_email_msg'];
 
@@ -222,9 +222,9 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
                 }
 
                 // Update our email message
-                Ninja_Forms()->notification( $n_id )->update_setting( 'email_message', $email_message );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'email_message', $email_message );
 
-                Ninja_Forms()->notification( $n_id )->update_setting( 'user_email', true );
+                NF_SaveConverter()->notification( $n_id )->update_setting( 'user_email', true );
             }
         }
 
@@ -301,20 +301,20 @@ final class NF_Upgrade_Notifications extends NF_Upgrade
 
     private function getFormCount()
     {
-        $forms = Ninja_Forms()->forms()->get_all();
+        $forms = NF_SaveConverter()->forms()->get_all();
         return count( $forms );
     }
 
     private function getAllForms()
     {
-        $forms = Ninja_Forms()->forms()->get_all();
+        $forms = NF_SaveConverter()->forms()->get_all();
 
         $tmp_array = array();
         $x = 0;
         foreach ( $forms as $form_id ) {
             $tmp_array[ $x ]['id'] = $form_id;
-            $tmp_array[ $x ]['data'] = Ninja_Forms()->form( $form_id )->get_all_settings();
-            $tmp_array[ $x ]['name'] = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+            $tmp_array[ $x ]['data'] = NF_SaveConverter()->form( $form_id )->get_all_settings();
+            $tmp_array[ $x ]['name'] = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
             $x++;
         }
 

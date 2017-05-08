@@ -298,7 +298,7 @@ function nf_remove_old_email_send_to( $form_id ) {
 	}
 
 	// Update any old email settings we have.
-	$fields = Ninja_Forms()->form( $form_id )->fields;
+	$fields = NF_SaveConverter()->form( $form_id )->fields;
 
 	// Create a notification for our user email
 	if ( ! empty ( $fields ) ) {

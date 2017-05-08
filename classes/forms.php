@@ -48,9 +48,9 @@ class NF_Forms {
 			foreach ( $forms as $form ) {
 				$form_id = $form['id'];
 
-				$status = Ninja_Forms()->form( $form_id )->get_setting( 'status' );
+				$status = NF_SaveConverter()->form( $form_id )->get_setting( 'status' );
 				if ( ( $status == 'new' && $show_new ) || $status != 'new' ) {
-					$title = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+					$title = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
 					if ( strpos( $title, '_' ) === 0 ) {
 						if ( $debug )
 							$tmp_array[] = $form_id;
@@ -73,9 +73,9 @@ class NF_Forms {
 	 * @return void
 	 */
 	public function maybe_delete( $form_id ) {
-		$status = Ninja_Forms()->form( $form_id )->get_setting( 'status' );
+		$status = NF_SaveConverter()->form( $form_id )->get_setting( 'status' );
 		if ( 'new' == $status ) {
-			Ninja_Forms()->form( $form_id )->delete();
+			NF_SaveConverter()->form( $form_id )->delete();
 		}
 	}
 

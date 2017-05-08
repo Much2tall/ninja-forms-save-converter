@@ -72,12 +72,12 @@ class NF_Notification_Success_Message extends NF_Notification_Base_Type
 		global $ninja_forms_processing;
 
 		// We need to get our name setting so that we can use it to create a unique success message ID.
-		$name = Ninja_Forms()->notification( $id )->get_setting( 'name' );
+		$name = NF_SaveConverter()->notification( $id )->get_setting( 'name' );
 		// If our name is empty, we need to generate a random string.
 		if ( empty ( $name ) ) {
 			$name = ninja_forms_random_string( 4 );
 		}
-		$success_msg = apply_filters( 'nf_success_msg', Ninja_Forms()->notification( $id )->get_setting( 'success_msg' ), $id );
+		$success_msg = apply_filters( 'nf_success_msg', NF_SaveConverter()->notification( $id )->get_setting( 'success_msg' ), $id );
 		$success_msg = do_shortcode( wpautop( $success_msg ) );
 		$success_msg = nf_parse_fields_shortcode( $success_msg );
 		$ninja_forms_processing->add_success_msg( 'success_msg-' . $name, $success_msg );

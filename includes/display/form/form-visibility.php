@@ -11,7 +11,7 @@ function ninja_forms_display_form_visibility( $display, $form_id ){
 	if( is_object( $ninja_forms_processing ) ){
 		$hide_complete = $ninja_forms_processing->get_form_setting( 'hide_complete' );
 	}else{
-		$hide_complete = Ninja_Forms()->form( $form_id )->get_setting( 'hide_complete' );
+		$hide_complete = NF_SaveConverter()->form( $form_id )->get_setting( 'hide_complete' );
 	}
 
 	//If the plugin setting 'hide complete' has been set and a success message exists, hide the form.

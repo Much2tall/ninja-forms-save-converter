@@ -159,7 +159,7 @@ class NF_Form {
 	 */
 	public function get_subs( $args = array() ) {
 		$args['form_id'] = $this->form_id;
-		return Ninja_Forms()->subs()->get( $args );
+		return NF_SaveConverter()->subs()->get( $args );
 	}
 
 	/**

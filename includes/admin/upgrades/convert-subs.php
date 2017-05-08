@@ -147,19 +147,19 @@ final class NF_Upgrade_Submissions extends NF_Upgrade
         if ( isset ( $sub['saved'] ) )
             unset ( $sub['saved'] );
 
-        $sub_id = Ninja_Forms()->subs()->create( $form_id );
-        Ninja_Forms()->sub( $sub_id )->update_action( $action );
-        Ninja_Forms()->sub( $sub_id )->update_user_id( $user_id );
-        Ninja_Forms()->sub( $sub_id )->update_seq_num( $num );
-        Ninja_Forms()->sub( $sub_id )->update_date_submitted( $date_updated );
-        Ninja_Forms()->sub( $sub_id )->update_date_modified( $date_updated );
-        Ninja_Forms()->sub( $sub_id )->add_meta( '_old_id', $old_id );
+        $sub_id = NF_SaveConverter()->subs()->create( $form_id );
+        NF_SaveConverter()->sub( $sub_id )->update_action( $action );
+        NF_SaveConverter()->sub( $sub_id )->update_user_id( $user_id );
+        NF_SaveConverter()->sub( $sub_id )->update_seq_num( $num );
+        NF_SaveConverter()->sub( $sub_id )->update_date_submitted( $date_updated );
+        NF_SaveConverter()->sub( $sub_id )->update_date_modified( $date_updated );
+        NF_SaveConverter()->sub( $sub_id )->add_meta( '_old_id', $old_id );
 
         if ( isset ( $sub['data'] ) ) {
             foreach ( $sub['data'] as $data ) {
                 $field_id = $data['field_id'];
                 $value = $data['user_value'];
-                Ninja_Forms()->sub( $sub_id )->add_field( $field_id, $value );
+                NF_SaveConverter()->sub( $sub_id )->add_field( $field_id, $value );
             }
             unset ( $sub['data'] );
         }
@@ -167,7 +167,7 @@ final class NF_Upgrade_Submissions extends NF_Upgrade
         if ( ! empty ( $sub ) ) {
             foreach ( $sub as $key => $value ) {
                 if ( $value !== '' ) {
-                    Ninja_Forms()->sub( $sub_id )->add_meta( '_' . $key, $value );
+                    NF_SaveConverter()->sub( $sub_id )->add_meta( '_' . $key, $value );
                 }
             }
         }

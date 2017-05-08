@@ -10,8 +10,8 @@ function ninja_forms_register_display_form_title(){
 
 function ninja_forms_display_form_title( $form_id ){
 
-	$show_title = Ninja_Forms()->form( $form_id )->get_setting( 'show_title' );
-	$form_title = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+	$show_title = NF_SaveConverter()->form( $form_id )->get_setting( 'show_title' );
+	$form_title = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
 
 	$title_class = 'ninja-forms-form-title';
 

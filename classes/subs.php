@@ -39,22 +39,22 @@ class NF_Subs {
 		$sub_id = wp_insert_post( $post );
 
 		// Add our form ID to the submission
-		Ninja_Forms()->sub( $sub_id )->update_form_id( $form_id );
+		NF_SaveConverter()->sub( $sub_id )->update_form_id( $form_id );
 
 		// Get the current sequential ID
-		$last_sub = Ninja_Forms()->form( $form_id )->get_setting( 'last_sub', true );
+		$last_sub = NF_SaveConverter()->form( $form_id )->get_setting( 'last_sub', true );
 		$seq_num = ! empty ( $last_sub ) ? $last_sub + 1 : 1;
 
 		$seq_num = apply_filters( 'nf_sub_seq_num', $seq_num, $form_id );
 
 		// Add the sequential ID to the post meta
-		Ninja_Forms()->sub( $sub_id )->update_seq_num( $seq_num );
+		NF_SaveConverter()->sub( $sub_id )->update_seq_num( $seq_num );
 
 		// Update our form data with the new "last seq id."
-		Ninja_Forms()->form( $form_id )->update_setting( 'last_sub', $seq_num );
+		NF_SaveConverter()->form( $form_id )->update_setting( 'last_sub', $seq_num );
 
 		// Update our sub count
-		Ninja_Forms()->form( $form_id )->sub_count = $seq_num - 1;
+		NF_SaveConverter()->form( $form_id )->sub_count = $seq_num - 1;
 
 		return $sub_id;
 	}
@@ -133,7 +133,7 @@ class NF_Subs {
 
 		if ( is_array( $subs->posts ) && ! empty( $subs->posts ) ) {
 			foreach ( $subs->posts as $sub ) {
-				$sub_objects[] = Ninja_Forms()->sub( $sub->ID );
+				$sub_objects[] = NF_SaveConverter()->sub( $sub->ID );
 			}			
 		}
 
@@ -165,10 +165,10 @@ class NF_Subs {
 	
 		$label_array = array();
 		// Get our Form ID.
-		$form_id = Ninja_Forms()->sub( $sub_ids[0] )->form_id;
+		$form_id = NF_SaveConverter()->sub( $sub_ids[0] )->form_id;
 
 		// Get our list of fields.
-		$fields = Ninja_Forms()->form( $form_id )->fields;
+		$fields = NF_SaveConverter()->form( $form_id )->fields;
 
 		// Add our sequential number.
 		$label_array[0]['_seq_num'] = __( '#', 'ninja-forms' );
@@ -216,17 +216,17 @@ class NF_Subs {
 					// Check to see if our field_id is numeric. If it isn't, then we're working with meta, not a field.
 					if ( is_numeric( $field_id ) ) {
 						// We're working with a field, grab the value.
-						$user_value = Ninja_Forms()->sub( $sub_id )->get_field( $field_id );
+						$user_value = NF_SaveConverter()->sub( $sub_id )->get_field( $field_id );
 					} else if ( '_date_submitted' == $field_id ) {
 						// Get the date of our submission.
-						$date = strtotime( Ninja_Forms()->sub( $sub_id )->date_submitted );
+						$date = strtotime( NF_SaveConverter()->sub( $sub_id )->date_submitted );
 						// The first item is our date field.
 						$user_value = date( $date_format, $date );
 					} else if ( '_seq_num' == $field_id ) {
-						$user_value = Ninja_Forms()->sub( $sub_id )->get_seq_num();
+						$user_value = NF_SaveConverter()->sub( $sub_id )->get_seq_num();
 					} else {
 						// We're working with a piece of meta, grabe the value.
-						$user_value = Ninja_Forms()->sub( $sub_id )->get_meta( $field_id );
+						$user_value = NF_SaveConverter()->sub( $sub_id )->get_meta( $field_id );
 					}
 
 					// Run our value through the appropriate filters before we flatten any arrays.

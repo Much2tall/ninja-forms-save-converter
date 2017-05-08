@@ -21,7 +21,7 @@ function ninja_forms_import_form( $file ){
 		unset( $form['data']['last_sub'] );
 
 	// Create our form
-	$form_id = Ninja_Forms()->form()->create( $form['data'] );
+	$form_id = NF_SaveConverter()->form()->create( $form['data'] );
 
 	$form['id'] = $form_id;
 

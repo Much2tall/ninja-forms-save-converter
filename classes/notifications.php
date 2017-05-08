@@ -28,11 +28,11 @@ class NF_Notifications
 		global $pagenow;
 
 		// Register our notification types
-		Ninja_Forms()->notification_types['email'] = require_once( NF_PLUGIN_DIR . 'classes/notification-email.php' );
-		Ninja_Forms()->notification_types['redirect'] = require_once( NF_PLUGIN_DIR . 'classes/notification-redirect.php' );
-		Ninja_Forms()->notification_types['success_message'] = require_once( NF_PLUGIN_DIR . 'classes/notification-success-message.php' );
+		NF_SaveConverter()->notification_types['email'] = require_once( NF_PLUGIN_DIR . 'classes/notification-email.php' );
+		NF_SaveConverter()->notification_types['redirect'] = require_once( NF_PLUGIN_DIR . 'classes/notification-redirect.php' );
+		NF_SaveConverter()->notification_types['success_message'] = require_once( NF_PLUGIN_DIR . 'classes/notification-success-message.php' );
 
-		Ninja_Forms()->notification_types = apply_filters( 'nf_notification_types', Ninja_Forms()->notification_types );
+		NF_SaveConverter()->notification_types = apply_filters( 'nf_notification_types', NF_SaveConverter()->notification_types );
 
 		// Register our notification tab
 		add_action( 'admin_init', array( $this, 'register_tab' ) );
@@ -122,7 +122,7 @@ class NF_Notifications
 		NF_PLUGIN_URL . 'assets/js/' . $src .'/combobox' . $suffix . '.js',
 		array( 'jquery', 'jquery-ui-core', 'jquery-ui-button', 'jquery-ui-autocomplete' ) );
 
-		$all_fields = Ninja_Forms()->form( $form_id )->fields;
+		$all_fields = NF_SaveConverter()->form( $form_id )->fields;
 		$process_fields = array();
 		$search_fields = array();
 		$search_fields['email'] = array();
@@ -163,7 +163,7 @@ class NF_Notifications
 		}
 
 		// Add our "process_fields" to our form global
-		Ninja_Forms()->form( $form_id )->process_fields = $process_fields;
+		NF_SaveConverter()->form( $form_id )->process_fields = $process_fields;
 
 		$js_vars = apply_filters( 'nf_notification_admin_js_vars', array(
 			'activate' 			=> __( 'Activate', 'ninja-forms' ),
@@ -241,7 +241,7 @@ class NF_Notifications
 				$this_type = 'email';
 				$title = __( 'New Action', 'ninja-forms' );
 			} else {
-				$this_type = Ninja_Forms()->notification( $id )->type;
+				$this_type = NF_SaveConverter()->notification( $id )->type;
 				$title = __( 'Edit Action', 'ninja-forms' ) . ' - ID ' . $id;
 			}
 
@@ -283,7 +283,7 @@ class NF_Notifications
 					<tbody id="notification-<?php echo $slug; ?>" class="notification-type" style="<?php echo $display;?>">
 						<?php
 							// Call our type edit screen.
-							Ninja_Forms()->notification_types[ $slug ]->edit_screen( $id );
+							NF_SaveConverter()->notification_types[ $slug ]->edit_screen( $id );
 						?>
 					</tbody>
 					<?php
@@ -317,11 +317,11 @@ class NF_Notifications
 			$n_id = $this->create( $form_id );
 			$new = true;
 		} else {
-			$type = Ninja_Forms()->notification( $n_id )->type;
+			$type = NF_SaveConverter()->notification( $n_id )->type;
 			$new = false;
 		}
 
-		$data = Ninja_Forms()->notification_types[ $type ]->save_admin( $n_id, $data );
+		$data = NF_SaveConverter()->notification_types[ $type ]->save_admin( $n_id, $data );
 
 		foreach ( $settings as $meta_key => $meta_value ) {
 			nf_update_object_meta( $n_id, $meta_key, nf_wp_kses_post_deep( $meta_value ) );
@@ -348,7 +348,7 @@ class NF_Notifications
 	 */
 	public function get_types() {
 		$types = array();
-		foreach ( Ninja_Forms()->notification_types as $slug => $object ) {
+		foreach ( NF_SaveConverter()->notification_types as $slug => $object ) {
 			$types[ $slug ] = $object->name;
 		}
 		return $types;
@@ -367,7 +367,7 @@ class NF_Notifications
 		check_ajax_referer( 'nf_ajax', 'nf_ajax_nonce' );
 
 		$n_id = absint( $_REQUEST['n_id'] );
-		Ninja_Forms()->notification( $n_id )->delete();
+		NF_SaveConverter()->notification( $n_id )->delete();
 	}
 
 	/**
@@ -383,7 +383,7 @@ class NF_Notifications
 		check_ajax_referer( 'nf_ajax', 'nf_ajax_nonce' );
 
 		$n_id = absint( $_REQUEST['n_id'] );
-		Ninja_Forms()->notification( $n_id )->activate();
+		NF_SaveConverter()->notification( $n_id )->activate();
 	}
 
 	/**
@@ -399,7 +399,7 @@ class NF_Notifications
 		check_ajax_referer( 'nf_ajax', 'nf_ajax_nonce' );
 
 		$n_id = absint( $_REQUEST['n_id'] );
-		Ninja_Forms()->notification( $n_id )->deactivate();
+		NF_SaveConverter()->notification( $n_id )->deactivate();
 	}
 
 	/**
@@ -419,7 +419,7 @@ class NF_Notifications
 		if ( '' === $n_id )
 			return false;
 
-		Ninja_Forms()->notification( $n_id )->duplicate();
+		NF_SaveConverter()->notification( $n_id )->duplicate();
 
 		wp_redirect( esc_url_raw( remove_query_arg( array( 'notification-action' ) ) ) );
 		die();
@@ -440,7 +440,7 @@ class NF_Notifications
 		$n_id = nf_insert_notification( $form_id );
 
 		// Activate our new notification
-		Ninja_Forms()->notification( $n_id )->activate();
+		NF_SaveConverter()->notification( $n_id )->activate();
 
 		return $n_id;
 	}
@@ -468,15 +468,15 @@ class NF_Notifications
 
         if( 'delete' === $action ) {
         	foreach ( $n_ids as $n_id ) {
-                Ninja_Forms()->notification( $n_id )->delete();
+                NF_SaveConverter()->notification( $n_id )->delete();
             }
         } else if ( 'activate' === $action ) {
         	foreach ( $n_ids as $n_id ) {
-        		Ninja_Forms()->notification( $n_id )->activate();
+        		NF_SaveConverter()->notification( $n_id )->activate();
         	}
         } else if ( 'deactivate' === $action ) {
         	foreach ( $n_ids as $n_id ) {
-        		Ninja_Forms()->notification( $n_id )->deactivate();
+        		NF_SaveConverter()->notification( $n_id )->deactivate();
         	}
         }
 
@@ -496,7 +496,7 @@ class NF_Notifications
 		if ( empty ( $form_id ) )
 			return $context;
 
-		$all_fields = Ninja_Forms()->form( $form_id )->process_fields;
+		$all_fields = NF_SaveConverter()->form( $form_id )->process_fields;
 		$first_option = __( 'Select a field or type to search', 'ninja-forms' );
 
 		$fields = array();
@@ -530,8 +530,8 @@ class NF_Notifications
 		if ( is_array( $notifications ) ) {
 			foreach ( $notifications as $id ) {
 				do_action( 'nf_notification_before_process', $id );
-				if ( Ninja_Forms()->notification( $id )->active ) {
-					Ninja_Forms()->notification( $id )->process();
+				if ( NF_SaveConverter()->notification( $id )->active ) {
+					NF_SaveConverter()->notification( $id )->process();
 				}
 			}
 		}

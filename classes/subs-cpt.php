@@ -108,7 +108,7 @@ class NF_Subs_CPT {
 		$name = _x( 'Submissions', 'post type general name', 'ninja-forms' );
 
 		if ( ! empty ( $_REQUEST['form_id'] ) ) {
-			$form_title = Ninja_Forms()->form( absint( $_REQUEST['form_id'] ) )->get_setting( 'form_title' );
+			$form_title = NF_SaveConverter()->form( absint( $_REQUEST['form_id'] ) )->get_setting( 'form_title' );
 			$name =$name . ' - ' . $form_title;
 		}
 
@@ -173,14 +173,14 @@ class NF_Subs_CPT {
 		if ( isset ( $_REQUEST['form_id'] ) ) {
 			$form_id = absint( $_REQUEST['form_id'] );
 		} else if ( isset ( $_REQUEST['post'] ) ) {
-			$form_id = Ninja_Forms()->sub( absint( $_REQUEST['post'] ) )->form_id;
+			$form_id = NF_SaveConverter()->sub( absint( $_REQUEST['post'] ) )->form_id;
 		} else {
 			$form_id = '';
 		}
 
 		$this->form_id = $form_id;
 
-		Ninja_Forms()->form( $form_id );
+		NF_SaveConverter()->form( $form_id );
 	}
 
 	/**
@@ -282,8 +282,8 @@ class NF_Subs_CPT {
 		// Compatibility with old field registration system. Can be removed when the new one is in place.
 		if ( isset ( $_GET['form_id'] ) && $_GET['form_id'] != '' ) {
 			$form_id = absint( $_GET['form_id'] );
-			if ( is_object( Ninja_Forms()->form( $this->form_id ) ) && is_array ( Ninja_Forms()->form( $this->form_id )->fields ) ) {
-				foreach ( Ninja_Forms()->form( $this->form_id )->fields as $field ) {
+			if ( is_object( NF_SaveConverter()->form( $this->form_id ) ) && is_array ( NF_SaveConverter()->form( $this->form_id )->fields ) ) {
+				foreach ( NF_SaveConverter()->form( $this->form_id )->fields as $field ) {
 					$field_id = $field['id'];
 					$field_type = $field['type'];
 					if ( isset ( $ninja_forms_fields[ $field_type ] ) ) {
@@ -350,7 +350,7 @@ class NF_Subs_CPT {
 				$args = explode( '_', $vars['orderby'] );
 				$field_id = $args[3];
 
-				if ( isset ( Ninja_Forms()->form( $this->form_id )->fields[ $field_id ]['data']['num_sort'] ) && Ninja_Forms()->form( $this->form_id )->fields[ $field_id ]['data']['num_sort'] == 1 ) {
+				if ( isset ( NF_SaveConverter()->form( $this->form_id )->fields[ $field_id ]['data']['num_sort'] ) && NF_SaveConverter()->form( $this->form_id )->fields[ $field_id ]['data']['num_sort'] == 1 ) {
 					$orderby = 'meta_value_num';
 				} else {
 					$orderby = 'meta_value';
@@ -381,7 +381,7 @@ class NF_Subs_CPT {
 		if ( isset ( $_GET['form_id'] ) ) {
 			$form_id = $_GET['form_id'];
 			if ( $column == 'id' ) {
-				echo apply_filters( 'nf_sub_table_seq_num', Ninja_Forms()->sub( $sub_id )->get_seq_num(), $sub_id, $column );
+				echo apply_filters( 'nf_sub_table_seq_num', NF_SaveConverter()->sub( $sub_id )->get_seq_num(), $sub_id, $column );
 				echo '<div class="locked-info"><span class="locked-avatar"></span> <span class="locked-text"></span></div>';
 				if ( !isset ( $_GET['post_status'] ) || $_GET['post_status'] == 'all' ) {
 					echo '<div class="row-actions custom-row-actions">';
@@ -435,8 +435,8 @@ class NF_Subs_CPT {
 				global $ninja_forms_fields;
 
 				$field_id = str_replace( 'form_' . $form_id . '_field_', '', $column );
-				//if ( apply_filters( 'nf_add_sub_value', Ninja_Forms()->field( $field_id )->type->add_to_sub, $field_id ) ) {
-				$field = Ninja_Forms()->form( $form_id )->fields[ $field_id ];
+				//if ( apply_filters( 'nf_add_sub_value', NF_SaveConverter()->field( $field_id )->type->add_to_sub, $field_id ) ) {
+				$field = NF_SaveConverter()->form( $form_id )->fields[ $field_id ];
 				$field_type = $field['type'];
 				if ( isset ( $ninja_forms_fields[ $field_type ] ) ) {
 					$reg_field = $ninja_forms_fields[ $field_type ];
@@ -450,7 +450,7 @@ class NF_Subs_CPT {
 					$edit_value_function = 'nf_field_text_sub_table_value';
 				}
 
-				$user_value = Ninja_Forms()->sub( $sub_id )->get_field( $field_id );
+				$user_value = NF_SaveConverter()->sub( $sub_id )->get_field( $field_id );
 
 				$args['field_id'] = $field_id;
 				$args['user_value'] = ninja_forms_esc_html_deep( $user_value );
@@ -478,7 +478,7 @@ class NF_Subs_CPT {
 
 		// Add our Form selection dropdown.
 		// Get our list of forms
-		$forms = Ninja_Forms()->forms()->get_all();
+		$forms = NF_SaveConverter()->forms()->get_all();
 
 		$form_id = isset( $_GET['form_id'] ) ? $_GET['form_id'] : '';
 
@@ -492,7 +492,7 @@ class NF_Subs_CPT {
 		$html .= '<option value="">- ' . __( 'Select a form', 'ninja-forms' ) . '</option>';
 		if ( is_array( $forms ) ) {
 			foreach ( $forms as $f_id ) {
-				$form_title = Ninja_Forms()->form( $f_id )->get_setting( 'form_title' );
+				$form_title = NF_SaveConverter()->form( $f_id )->get_setting( 'form_title' );
 				$html .= '<option value="' . $f_id . '" ' . selected( $form_id, $f_id, false ) . '>' . $form_title . '</option>';
 			}
 		}
@@ -878,8 +878,8 @@ class NF_Subs_CPT {
 	public function edit_sub_metabox( $post ) {
 		global $ninja_forms_fields;
 		// Get all the post meta
-		$form_id = Ninja_Forms()->sub( $post->ID )->form_id;
-		$fields = Ninja_Forms()->form( $this->form_id )->fields;
+		$form_id = NF_SaveConverter()->sub( $post->ID )->form_id;
+		$fields = NF_SaveConverter()->form( $this->form_id )->fields;
 
 		if ( isset ( $_REQUEST['ref'] ) ) {
 			$ref = esc_url_raw( $_REQUEST['ref'] );
@@ -902,7 +902,7 @@ class NF_Subs_CPT {
 				<?php
 				// Loop through our post meta and keep our field values
 				foreach ( $fields as $field_id => $field ) {
-					$user_value = Ninja_Forms()->sub( $post->ID )->get_field( $field_id );
+					$user_value = NF_SaveConverter()->sub( $post->ID )->get_field( $field_id );
 					$field_type = $field['type'];
 
 					if ( isset ( $field['data']['admin_label'] ) && $field['data']['admin_label'] != '' ) {
@@ -920,7 +920,7 @@ class NF_Subs_CPT {
 						$process_field = false;
 					}
 
-					if ( isset ( Ninja_Forms()->form( $this->form_id )->fields[ $field_id ] ) && $process_field ) {
+					if ( isset ( NF_SaveConverter()->form( $this->form_id )->fields[ $field_id ] ) && $process_field ) {
 						?>
 						<tr>
 							<td class="left"><?php echo $label; ?></td>
@@ -982,8 +982,8 @@ class NF_Subs_CPT {
 			$name = apply_filters( 'nf_edit_sub_username', $name, $post->post_author );
 		}
 
-		$form_id = Ninja_Forms()->sub( $post->ID )->form_id;
-		$form_title = Ninja_Forms()->form( $form_id )->get_setting( 'form_title' );
+		$form_id = NF_SaveConverter()->sub( $post->ID )->form_id;
+		$form_title = NF_SaveConverter()->form( $form_id )->get_setting( 'form_title' );
 		?>
 		<input type="hidden" name="nf_edit_sub" value="1">
 		<div class="submitbox" id="submitpost">
@@ -991,7 +991,7 @@ class NF_Subs_CPT {
 				<div id="misc-publishing-actions">
 					<div class="misc-pub-section misc-pub-post-status">
 						<label for="post_status"><?php _e( '#', 'ninja-forms' ); ?>:</label>
-						<span id="sub-seq-num-display"><?php echo Ninja_Forms()->sub( $post->ID )->get_seq_num(); ?></span>
+						<span id="sub-seq-num-display"><?php echo NF_SaveConverter()->sub( $post->ID )->get_seq_num(); ?></span>
 					</div>
 					<div class="misc-pub-section misc-pub-post-status">
 						<label for="post_status"><?php _e( 'Status', 'ninja-forms' ); ?>:</label>
@@ -1074,7 +1074,7 @@ class NF_Subs_CPT {
 
 		foreach ( $_POST['fields'] as $field_id => $user_value ) {
 			$user_value = nf_wp_kses_post_deep( apply_filters( 'nf_edit_sub_user_value', $user_value, $field_id, $sub_id ) );
-			Ninja_Forms()->sub( $sub_id )->update_field( $field_id, $user_value );
+			NF_SaveConverter()->sub( $sub_id )->update_field( $field_id, $user_value );
 		}
 
 		set_transient( 'nf_sub_edit_ref', esc_url_raw( $_REQUEST['ref'] ) );
@@ -1165,10 +1165,10 @@ class NF_Subs_CPT {
 			return false;
 
 		if ( isset ( $_REQUEST['export_single'] ) && ! empty( $_REQUEST['export_single'] ) )
-			Ninja_Forms()->sub( esc_html( $_REQUEST['export_single'] ) )->export();
+			NF_SaveConverter()->sub( esc_html( $_REQUEST['export_single'] ) )->export();
 
 		if ( ( isset ( $_REQUEST['action'] ) && $_REQUEST['action'] == 'export' ) || ( isset ( $_REQUEST['action2'] ) && $_REQUEST['action2'] == 'export' ) ) {
-			Ninja_Forms()->subs()->export( ninja_forms_esc_html_deep( $_REQUEST['post'] ) );
+			NF_SaveConverter()->subs()->export( ninja_forms_esc_html_deep( $_REQUEST['post'] ) );
 		}
 
 		if ( isset ( $_REQUEST['download_file'] ) && ! empty( $_REQUEST['download_file'] ) ) {
@@ -1189,7 +1189,7 @@ class NF_Subs_CPT {
 
 			unlink( $file_path );
 
-			$form_name = Ninja_Forms()->form( absint( $_REQUEST['form_id'] ) )->get_setting( 'form_title' );
+			$form_name = NF_SaveConverter()->form( absint( $_REQUEST['form_id'] ) )->get_setting( 'form_title' );
 			$form_name = sanitize_title( $form_name );
 
 			$today = date( 'Y-m-d', current_time( 'timestamp' ) );

@@ -122,9 +122,9 @@ function nf_admin_save_builder() {
 		}
 
 		$date_updated = date( 'Y-m-d H:i:s', strtotime ( 'now' ) );
-		Ninja_Forms()->form( $form_id )->update_setting( 'form_title', $form_title );
-		Ninja_Forms()->form( $form_id )->update_setting( 'date_updated', $date_updated );
-		Ninja_Forms()->form( $form_id )->update_setting( 'status', '' );
+		NF_SaveConverter()->form( $form_id )->update_setting( 'form_title', $form_title );
+		NF_SaveConverter()->form( $form_id )->update_setting( 'date_updated', $date_updated );
+		NF_SaveConverter()->form( $form_id )->update_setting( 'status', '' );
 	}
 
 	// Dump our current form transient.
@@ -215,7 +215,7 @@ function ninja_forms_remove_field(){
 	$field_id = absint( $_REQUEST['field_id'] );
 	$form_id = absint( $_REQUEST['form_id'] );
 	$wpdb->query($wpdb->prepare("DELETE FROM ".NINJA_FORMS_FIELDS_TABLE_NAME." WHERE id = %d", $field_id));
-	Ninja_Forms()->form( $form_id )->dump_cache();
+	NF_SaveConverter()->form( $form_id )->dump_cache();
 	die();
 }
 

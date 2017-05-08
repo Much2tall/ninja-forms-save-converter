@@ -6,7 +6,7 @@ function ninja_forms_register_display_open_form_tag() {
 add_action( 'init', 'ninja_forms_register_display_open_form_tag' );
 
 function ninja_forms_display_open_form_tag( $form_id ) {
-	$ajax = Ninja_Forms()->form( $form_id )->get_setting( 'ajax' );
+	$ajax = NF_SaveConverter()->form( $form_id )->get_setting( 'ajax' );
 	$ajax = ! empty ( $ajax ) ? $ajax : 0;
 
 	if ( $ajax == 1 ) {

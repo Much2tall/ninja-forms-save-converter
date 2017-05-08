@@ -125,7 +125,7 @@ class Ninja_Forms_Processing {
 		
 		$this->data['action'] = 'submit';
 		$this->data['form']['form_url'] = $this->get_current_url();
-		$cache = ( Ninja_Forms()->session->get( 'nf_cache' ) ) ? Ninja_Forms()->session->get( 'nf_cache' ) : null;
+		$cache = ( NF_SaveConverter()->session->get( 'nf_cache' ) ) ? NF_SaveConverter()->session->get( 'nf_cache' ) : null;
 
 		// If we have fields in our $_POST object, then loop through the $_POST'd field values and add them to our global variable.
 		if ( isset ( $_POST['_ninja_forms_display_submit'] ) OR isset ( $_POST['_ninja_forms_edit_sub'] ) ) {

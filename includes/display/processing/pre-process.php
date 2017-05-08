@@ -5,10 +5,10 @@ function ninja_forms_setup_processing_class( $form_id = '' ){
 	$session_reflection = new ReflectionMethod( 'WP_Session', 'set_cookie' );
 	if( $session_reflection->isPublic() ){
 		// Manually set the cookie.
-		Ninja_Forms()->session->init()->set_cookie();
+		NF_SaveConverter()->session->init()->set_cookie();
 	}
 
-	$cache = Ninja_Forms()->session->get( 'nf_cache' );
+	$cache = NF_SaveConverter()->session->get( 'nf_cache' );
 	//Set the form id
 	if ( $form_id == '' ) {
 		if ( isset ( $_REQUEST['_form_id'] ) ) {

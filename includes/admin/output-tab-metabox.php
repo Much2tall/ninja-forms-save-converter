@@ -2,7 +2,7 @@
 function ninja_forms_output_tab_metabox($form_id = '', $slug, $metabox){
 	$plugin_settings = nf_get_settings();
 	if($form_id != ''){
-		$current_settings = Ninja_Forms()->form($form_id)->get_all_settings();
+		$current_settings = NF_SaveConverter()->form($form_id)->get_all_settings();
 	}else{
 		$form_id = '';
 		$current_settings = nf_get_settings();
