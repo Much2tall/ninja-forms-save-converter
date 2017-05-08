@@ -21,8 +21,8 @@ class NF_SaveConverter {
 
 
     /**
-     * @var Ninja_Forms
-     * @since 2.7
+     * @var NF_SaveConverter
+     * @since 1.0
      */
     private static $instance;
 
@@ -32,15 +32,15 @@ class NF_SaveConverter {
     var $notification_types = array();
 
     /**
-     * Main Ninja_Forms Instance
+     * Main NF_SaveConverter Instance
      *
-     * Insures that only one instance of Ninja_Forms exists in memory at any one
+     * Insures that only one instance of NF_SaveConverter exists in memory at any one
      * time. Also prevents needing to define globals all over the place.
      *
-     * @since 2.7
+     * @since 1.0
      * @static
      * @staticvar array $instance
-     * @return The highlander Ninja_Forms
+     * @return The highlander NF_SaveConverter
      */
     public static function instance() {
         if ( ! isset( self::$instance ) && ! ( self::$instance instanceof NF_SaveConverter ) ) {
@@ -77,7 +77,7 @@ class NF_SaveConverter {
      * Run all of our plugin stuff on init.
      * This allows filters and actions to be used by third-party classes.
      *
-     * @since 2.7
+     * @since 1.0
      * @return void
      */
     public function init() {
