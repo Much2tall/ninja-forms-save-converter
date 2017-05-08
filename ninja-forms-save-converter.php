@@ -1,9 +1,23 @@
 <?php
+
+/*
+Plugin Name: Ninja Forms Save Conversion Tool
+Plugin URI: http://ninjaforms.com/
+Description: The Save Conversion Tool is provided to convert Saved records into Form Submissions in Ninja Forms.
+Version: 1.0
+Author: The WP Ninjas
+Author URI: http://ninjaforms.com
+Text Domain: ninja-forms-save-converter
+Domain Path: /lang/
+
+Copyright 2017 WP Ninjas.
+*/
+
 // Exit if accessed directly
 if ( ! defined( 'ABSPATH' ) )
     exit;
 
-class Ninja_Forms {
+class NF_SaveConverter {
 
 
     /**
@@ -29,8 +43,8 @@ class Ninja_Forms {
      * @return The highlander Ninja_Forms
      */
     public static function instance() {
-        if ( ! isset( self::$instance ) && ! ( self::$instance instanceof Ninja_Forms ) ) {
-            self::$instance = new Ninja_Forms;
+        if ( ! isset( self::$instance ) && ! ( self::$instance instanceof NF_SaveConverter ) ) {
+            self::$instance = new NF_SaveConverter;
             self::$instance->setup_constants();
             self::$instance->includes();
 
@@ -745,11 +759,11 @@ class Ninja_Forms {
  * @since 2.7
  * @return object The Highlander Ninja_Forms Instance
  */
-function Ninja_Forms() {
-    return Ninja_Forms::instance();
+function NF_SaveConverter() {
+    return NF_SaveConverter::instance();
 }
 
-Ninja_Forms();
+NF_SaveConverter();
 
 function nf_aff_link( $link ){
     $u_id = apply_filters( 'ninja_forms_affiliate_id', false );
@@ -790,7 +804,7 @@ function ninja_forms_three_submenu(){
 add_action( 'admin_notices', 'ninja_forms_three_admin_notice' );
 function ninja_forms_three_admin_notice(){
 
-    $settings = Ninja_Forms()->get_plugin_settings();
+    $settings = NF_SaveConverter()->get_plugin_settings();
     if( isset( $settings[ 'disable_admin_notices' ] ) && $settings[ 'disable_admin_notices' ] ) return;
 
     $currentScreen = get_current_screen();
@@ -939,7 +953,7 @@ register_uninstall_hook( __FILE__, 'ninja_forms_uninstall' );
 function ninja_forms_uninstall(){
     global $wpdb;
 
-    $settings = Ninja_Forms()->get_plugin_settings();
+    $settings = NF_SaveConverter()->get_plugin_settings();
 
     // Bail if we haven't checked the "delete on uninstall" box.
     if (isset ($settings['delete_on_uninstall']) && 1 == $settings['delete_on_uninstall']) {
