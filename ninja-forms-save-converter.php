@@ -61,7 +61,7 @@ class NF_SaveConverter {
      */
     public function admin_init() {
         self::$instance->update_version_number();
-	    //$page = add_menu_page( "Ninja Forms Save Converter" , __( 'Ninja Forms Save Conversion Tool', 'ninja-forms' ), apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ), "edit.php?post_type=nf_sub&convert=saves", "", "dashicons-feedback" );
+	    $page = add_menu_page( "Ninja Forms Save Conversion Tool" , __( 'Ninja Forms Save Conversion Tool', 'ninja-forms' ), apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ), "edit.php?post_type=nf_sub&convert=saves", "", "dashicons-feedback" );
     }
     
     /**
@@ -104,6 +104,7 @@ class NF_SaveConverter {
             add_action( 'manage_posts_custom_column', array( $this, 'custom_columns' ), 10, 2 );
             remove_action( 'admin_footer-edit.php', array( $nf->subs_cpt, 'bulk_admin_footer' ) );
             add_action( 'admin_footer-edit.php', array( $this, 'bulk_admin_footer' ) );
+            add_action( 'admin_notices', array( $this, 'conversion_mode_message') );
         }
     }
     
@@ -148,6 +149,23 @@ class NF_SaveConverter {
     }
     
     /**
+     * Register a notice about Conversion Mode being enabled.
+     * 
+     * @since 1.0
+     * @return void
+     */
+    public function conversion_mode_message() {
+        
+        $message = '<div class="update-nag nf-admin-notice">
+                <div class="nf-notice-logo"></div>
+                <p class="nf-notice-title" style="color:#ED494D;">Conversion Mode Activated!</p>
+                <p class="nf-notice-body">Only Saves are being shown on your Submissions page. To restore default functionality, disable Ninja Forms - Save Conversion Tool from your Plugins Menu.</p>
+                </div>';
+        _e( $message );
+        wp_enqueue_style( 'nf-admin-notices', NINJA_FORMS_URL .'assets/css/admin-notices.css?nf_ver=' . NF_PLUGIN_VERSION );
+    }
+    
+    /**
      * Register our new options in the bulk actions.
      * 
      * @since 1.0
@@ -163,8 +181,8 @@ class NF_SaveConverter {
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
-                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submission')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submission')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action2']");
                     <?php
                     if ( ( isset ( $_POST['action'] ) && $_POST['action'] == 'convert_saves' ) || ( isset ( $_POST['action2'] ) && $_POST['action2'] == 'convert_saves' ) ) {
                         ?>
