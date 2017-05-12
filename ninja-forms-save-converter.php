@@ -40,32 +40,17 @@ class NF_SaveConverter {
     public static function instance() {
         if ( ! isset( self::$instance ) && ! ( self::$instance instanceof NF_SaveConverter ) ) {
             self::$instance = new NF_SaveConverter;
-            self::$instance->setup_constants();
-            self::$instance->includes();
 
-            // TODO: Might need this later?
-//            register_activation_hook( __FILE__, 'nf_save_converter_activation' );
-            add_action( 'init', array( self::$instance, 'init' ), 5 );
             add_action( 'admin_init', array( self::$instance, 'admin_init' ), 5 );
+            // Ensure that we only show Saves in the Submission table.
             add_action( 'pre_get_posts', array( self::$instance, 'filter_subs' ), 5 );
+            // Hijack 2.9 scripts.
             add_action( 'admin_enqueue_scripts', array( self::$instance,'nf_sc_admin_js' ), 11 );
+            // Listen for clicks on our conversion buttons.
             add_action( 'load-edit.php', array( self::$instance, 'convert_listen' ) );
         }
 
         return self::$instance;
-    }
-
-    /**
-     * Run all of our plugin stuff on init.
-     * This allows filters and actions to be used by third-party classes.
-     *
-     * @since 1.0
-     * @return void
-     */
-    public function init() {
-        // The settings variable will hold our plugin settings.
-        self::$instance->plugin_settings = self::$instance->get_plugin_settings();
-        //echo('<style type="text/css">table .type-nf_sub{ display:none; } table .nf-sub-saved{ display:table-row !important; }</style>');
     }
 
     /**
@@ -76,10 +61,16 @@ class NF_SaveConverter {
      */
     public function admin_init() {
         self::$instance->update_version_number();
-	    $page = add_menu_page( "Ninja Forms Save Converter" , __( 'Ninja Forms Save Conversion Tool', 'ninja-forms' ), apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ), "edit.php?post_type=nf_sub&convert=saves", "", "dashicons-feedback" );
+	    //$page = add_menu_page( "Ninja Forms Save Converter" , __( 'Ninja Forms Save Conversion Tool', 'ninja-forms' ), apply_filters( 'ninja_forms_admin_parent_menu_capabilities', 'manage_options' ), "edit.php?post_type=nf_sub&convert=saves", "", "dashicons-feedback" );
     }
     
-    // Function to hook into our Submissions page and only display Saves.
+    /**
+     * Hook into our Submissions page and apply a filter to show only Saves.
+     * 
+     * @since 1.0
+     * @param array $query The post meta query.
+     * @return void
+     */
     public function filter_subs( $query ) {
         global $pagenow, $typenow;
         if( $pagenow == 'edit.php' && $typenow == 'nf_sub' ) {
@@ -98,6 +89,12 @@ class NF_SaveConverter {
         return;
     }
     
+    /**
+     * Remove the existing NF scritps from the Submissions page and apply new ones.
+     * 
+     * @since 1.0
+     * @return void
+     */
     public function nf_sc_admin_js() {
         global $pagenow, $typenow;
         if( $pagenow == 'edit.php' && $typenow == 'nf_sub' ) {
@@ -110,6 +107,12 @@ class NF_SaveConverter {
         }
     }
     
+    /**
+     * Listen for clicks on our convert buttons and respond accordingly.
+     * 
+     * @since 1.0
+     * @return false/void;
+     */
     public function convert_listen() {
         
 		// Bail if we aren't in the admin
@@ -144,6 +147,12 @@ class NF_SaveConverter {
         //die();
     }
     
+    /**
+     * Register our new options in the bulk actions.
+     * 
+     * @since 1.0
+     * @return false/void
+     */
 	public function bulk_admin_footer() {
 		global $post_type;
 
@@ -156,11 +165,7 @@ class NF_SaveConverter {
 				jQuery(document).ready(function() {
                     jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submission')?>').appendTo("select[name='action']");
                     jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submission')?>').appendTo("select[name='action2']");
-                    
-//					jQuery('<option>').val('export').text('<?php _e('Export')?>').appendTo("select[name='action']");
-//					jQuery('<option>').val('export').text('<?php _e('Export')?>').appendTo("select[name='action2']");
-					<?php
-//					if ( ( isset ( $_POST['action'] ) && $_POST['action'] == 'export' ) || ( isset ( $_POST['action2'] ) && $_POST['action2'] == 'export' ) ) {
+                    <?php
                     if ( ( isset ( $_POST['action'] ) && $_POST['action'] == 'convert_saves' ) || ( isset ( $_POST['action2'] ) && $_POST['action2'] == 'convert_saves' ) ) {
                         ?>
                         setInterval(function(){
@@ -179,6 +184,14 @@ class NF_SaveConverter {
 	}
     
     
+    /**
+     * Format the Submissions table with our hijacked CPT data.
+     * 
+     * @since 1.0
+     * @param string $column The database column.
+     * @param int $sub_id The submission ID.
+     * @return void
+     */
 	public function custom_columns( $column, $sub_id ) {
 		if ( isset ( $_GET['form_id'] ) ) {
 			$form_id = $_GET['form_id'];
@@ -188,19 +201,8 @@ class NF_SaveConverter {
 				echo '<div class="locked-info"><span class="locked-avatar"></span> <span class="locked-text"></span></div>';
 				if ( !isset ( $_GET['post_status'] ) || $_GET['post_status'] == 'all' ) {
 					echo '<div class="row-actions custom-row-actions">';
-					//do_action( 'nf_sub_table_before_row_actions', $sub_id, $column );
+					do_action( 'nf_sub_table_before_row_actions', $sub_id, $column );
 					echo '<span class="edit"><a href="post.php?post=' . $sub_id . '&action=edit&ref=' . urlencode( esc_url(  add_query_arg( array() ) ) ) . '" title="' . __( 'Edit this item', 'ninja-forms' ) . '">' . __( 'Edit', 'ninja-forms' ) . '</a> | </span> <span class="edit"><a href="' . esc_url( add_query_arg( array( 'convert_save' => $sub_id ) ) ) . '" title="' . __( 'Convert this Save to a Submission', 'ninja-forms' ) . '">' . __( 'Convert to Submission', 'ninja-forms' ) . '</a> | </span>';
-                    
-                    
-//						<span class="edit"><a href="' . esc_url( add_query_arg( array( 'export_single' => $sub_id ) ) ) . '" title="' . __( 'Export this item', 'ninja-forms' ) . '">' . __( 'Export', 'ninja-forms' ) . '</a> | </span>';
-					
-                    
-                    
-//                    $row_actions = apply_filters( 'nf_sub_table_row_actions', array(), $sub_id, $form_id );
-//					if ( ! empty( $row_actions ) ) {
-//						echo implode(" | ", $row_actions);
-//						echo '| ';
-//					}
 					echo '<span class="trash"><a class="submitdelete" title="' . __( 'Move this item to the Trash', 'ninja-forms' ) . '" href="' . get_delete_post_link( $sub_id ) . '">' . __( 'Trash', 'ninja-forms' ) . '</a> </span>';
 					do_action( 'nf_sub_table_after_row_actions', $sub_id, $column );
 					echo '</div>';
@@ -270,32 +272,6 @@ class NF_SaveConverter {
 		}
 	}
 
-    /**
-     * Setup plugin constants
-     *
-     * @access private
-     * @since 1.0
-     * @return void
-     */
-    private function setup_constants() {
-        
-    }
-
-    /**
-     * Include our Class files
-     *
-     * @access private
-     * @since 1.0
-     * @return void
-     */
-    private function includes() {
-        require_once( 'includes/data-controller.php' );
-    }
-    
-    private function get_plugin_settings() {
-        return '';
-    }
-    
     private function update_version_number() {
         
     }
@@ -303,16 +279,16 @@ class NF_SaveConverter {
 } // End Class
 
 /**
- * The main function responsible for returning The Highlander Ninja_Forms
+ * The main function responsible for returning The Highlander NF_SaveConverter
  * Instance to functions everywhere.
  *
  * Use this function like you would a global variable, except without needing
  * to declare the global.
  *
- * Example: <?php $nf = Ninja_Forms(); ?>
+ * Example: <?php $nfsc = NF_SaveConverter(); ?>
  *
  * @since 1.0
- * @return object The Highlander Ninja_Forms Instance
+ * @return object The Highlander NF_SaveConverter Instance
  */
 function NF_SaveConverter() {
     return NF_SaveConverter::instance();
@@ -326,12 +302,8 @@ NF_SaveConverter();
 |--------------------------------------------------------------------------
 */
 
-register_uninstall_hook( __FILE__, 'nf_save_converter_uninstall' );
+//register_uninstall_hook( __FILE__, 'nf_save_converter_uninstall' );
 
 function nf_save_converter_uninstall() {
-    
-}
-
-function nf_save_converter_activation() {
     
 }
