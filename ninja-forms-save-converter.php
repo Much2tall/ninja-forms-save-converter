@@ -148,10 +148,6 @@ class NF_SaveConverter {
             //echo($sql);
             $wpdb->query( $sql );
 		}
-        
-        if ( isset( $_REQUEST['bulk_email'] ) && $_REQUEST['bulk_email'] ) {
-            $this->bulk_conversion_email( $_REQUEST['form_id'] );
-        }
         //die();
     }
     
