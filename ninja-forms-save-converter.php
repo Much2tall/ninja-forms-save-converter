@@ -4,7 +4,7 @@
 Plugin Name: Ninja Forms - Save Conversion Tool
 Plugin URI: http://ninjaforms.com/
 Description: The Save Conversion Tool is provided to convert Saved records into Form Submissions in Ninja Forms.
-Version: 3.0
+Version: 1.0
 Author: The WP Ninjas
 Author URI: http://ninjaforms.com
 Text Domain: ninja-forms-save-converter
@@ -130,25 +130,34 @@ class NF_SaveConverter {
         global $wpdb;
 
 		if ( isset ( $_REQUEST['convert_save'] ) && ! empty( $_REQUEST['convert_save'] ) ) {
+            // Convert this to a submission.
             $sql = "UPDATE `" . $wpdb->prefix . "postmeta` SET meta_value = 'submit' WHERE post_id = " . intval( $_REQUEST['convert_save'] ) . " AND meta_key = '_action'";
-            //echo($sql);
+            $wpdb->query( $sql );
+            // Update the post date.
+            $sql = "UPDATE `" . $wpdb->prefix . "posts` SET post_date = '" . date('Y-m-d H:i:s') . "' WHERE ID = " . intval( $_REQUEST['convert_save'] );
             $wpdb->query( $sql );
         }
 
 		if ( ( isset ( $_REQUEST['action'] ) && $_REQUEST['action'] == 'convert_saves' ) || ( isset ( $_REQUEST['action2'] ) && $_REQUEST['action2'] == 'convert_saves' ) ) {
             if ( empty( $_REQUEST['post'] ) )
                 return false;
-            
+            // Convert these to submissions.
             $sql = "UPDATE `" . $wpdb->prefix . "postmeta` SET meta_value = 'submit' WHERE post_id IN (";
             foreach($_REQUEST['post'] as $sub) {
                 $sql .= intval( $sub ) . ", ";
             }
             $sql = substr( $sql, 0, ( strlen($sql) -2 ) );
             $sql .=  ") AND meta_key = '_action'";
-            //echo($sql);
+            $wpdb->query( $sql );
+            // Update the post dates.
+            $sql = "UPDATE `" . $wpdb->prefix . "posts` SET post_date = '" . date('Y-m-d H:i:s') . "' WHERE ID IN(";
+            foreach($_REQUEST['post'] as $sub) {
+                $sql .= intval( $sub ) . ", ";
+            }
+            $sql = substr( $sql, 0, ( strlen($sql) -2 ) );
+            $sql .= ")";
             $wpdb->query( $sql );
 		}
-        //die();
     }
     
     /**
