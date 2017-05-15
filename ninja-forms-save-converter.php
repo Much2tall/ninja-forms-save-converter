@@ -379,8 +379,6 @@ class NF_SaveConverter {
         if( !isset($_POST['data'] ) )
             return false;
         $data = json_decode( stripslashes( $_POST['data'] ), TRUE );
-//        var_dump($data);
-//        die();
         $form_id = intval( $data['form_id'] );
         $subject = empty( $data['subject'] ) ? '(No subject)' : $data['subject'];
         $headers = array();
@@ -396,10 +394,6 @@ class NF_SaveConverter {
         foreach( $result as $row ) {
             array_push( $to, $row['user_email'] );
         }
-//        var_dump($to);
-//        echo($subject);
-//        echo($data['message']);
-//        echo($from);
         $errors = array();
         try {
             $sent = wp_mail( $to, $subject, $data['message'], $headers );
@@ -519,10 +513,12 @@ class NF_SaveConverter {
  * @return object The Highlander NF_SaveConverter Instance
  */
 function NF_SaveConverter() {
-    return NF_SaveConverter::instance();
+    // If Ninja Forms exists.
+    if ( class_exists( 'Ninja_Forms', false ) )
+        return NF_SaveConverter::instance();
 }
 
-NF_SaveConverter();
+add_action('plugins_loaded', 'NF_SaveConverter');
 
 /*
 |--------------------------------------------------------------------------
