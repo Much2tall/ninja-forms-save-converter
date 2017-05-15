@@ -48,6 +48,8 @@ class NF_SaveConverter {
             add_action( 'admin_enqueue_scripts', array( self::$instance,'nf_sc_admin_js' ), 11 );
             // Listen for clicks on our conversion buttons.
             add_action( 'load-edit.php', array( self::$instance, 'convert_listen' ) );
+            // Listen for AJAX calls.
+            add_action( 'wp_ajax_nfsc_bulk_email', array( self::$instance, 'bulk_conversion_email' ) );
         }
 
         return self::$instance;
@@ -98,6 +100,7 @@ class NF_SaveConverter {
     public function nf_sc_admin_js() {
         global $pagenow, $typenow;
         if( $pagenow == 'edit.php' && $typenow == 'nf_sub' ) {
+            wp_enqueue_script( 'nfsc-jbox', plugin_dir_url( __FILE__ ) . 'assets/js/jBox.min.js', array( 'jquery' ) );
             wp_dequeue_style( 'nf-sp-admin' );
             $nf = Ninja_Forms();
             remove_action( 'manage_posts_custom_column', array( $nf->subs_cpt, 'custom_columns' ), 10 );
@@ -145,6 +148,10 @@ class NF_SaveConverter {
             //echo($sql);
             $wpdb->query( $sql );
 		}
+        
+        if ( isset( $_REQUEST['bulk_email'] ) && $_REQUEST['bulk_email'] ) {
+            $this->bulk_conversion_email( $_REQUEST['form_id'] );
+        }
         //die();
     }
     
@@ -176,11 +183,14 @@ class NF_SaveConverter {
 
 		if ( ! is_admin() )
 			return false;
-
+        
 		if( $post_type == 'nf_sub' && isset ( $_REQUEST['post_status'] ) && $_REQUEST['post_status'] == 'all' ) {
 			?>
 			<script type="text/javascript">
 				jQuery(document).ready(function() {
+                    // Create our Email Button.
+                    jQuery('<div>').text('<?php _e('Email Users with Saves'); ?>').addClass('nfsc-bulk-email').appendTo("#wpbody-content");
+                    // Add options to the bulk action list.
                     jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action']");
                     jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action2']");
                     <?php
@@ -195,11 +205,206 @@ class NF_SaveConverter {
 					}
 
 					?>
+                    // Setup our modal.
+                    var title = 'Composing Email to Users';
+                    var content = '<div><label for="nf-bulk-from">From Address:</label><input type="text" name="from" id="nf-bulk-from" /></div>' +
+                        '<div><label for="nf-bulk-subject">Subject:</label><input type="text" name="subject" id="nf-bulk-subject" /></div>' +
+                        '<div><label for="nf-bulk-message">Message:</label><textarea id="nf-bulk-message"></textarea></div>' +
+                        '<div id="nf-bulk-error"></div>'+
+                        '<div id="nf-modal-send" class="modal-button">Send</div><div id="nf-modal-cancel" class="modal-button">Cancel</div>';
+                    var bulkBox = new jBox('Modal', {
+                        width: 440,
+                        height: 500,
+                        attach: '.nfsc-bulk-email',
+                        title: title,
+                        content: content,
+                        addClass: 'nfsc-composer',
+                        closeButton: false,
+                        closeOnClick: false,
+                        closeOnEsc: false,
+                        overlay: true,
+                        onCreated: function(){
+                            // Listen for clicks on our Send button.
+                            document.getElementById('nf-modal-send').addEventListener('click', function(){
+                                var emailFrom = document.getElementById('nf-bulk-from');
+                                var errorBox = document.getElementById('nf-bulk-error');
+                                // Check to make sure the from address is valid.
+                                if( nfscCheckEmail( emailFrom ) ) {
+                                    var data = {
+                                        form_id: '<?php echo($_REQUEST['form_id']) ?>',
+                                        from: emailFrom.value,
+                                        subject: document.getElementById('nf-bulk-subject').value,
+                                        message: document.getElementById('nf-bulk-message').value
+                                    };
+                                    data = JSON.stringify( data );
+                                    var payload = {
+                                        action: 'nfsc_bulk_email',
+                                        data: data
+                                    };
+                                    jQuery.ajax({
+                                        type: "POST",
+                                        url: ajaxurl + '?action=nfsc_bulk_email',
+                                        data: payload,
+                                        success: function( response ){
+                                            bulkBox.close();
+                                        },
+                                        error: function( response ){
+                                            errorBox.innerHTML('Oops. Something went wrong.');
+                                        }
+                                    });
+                                }
+                                else {
+                                    errorBox.innerHTML = '<?php _e('Please enter a valid email address.', 'ninja-forms') ?>';
+                                    emailFrom.classList.add('nf-field-error');
+                                    // Listen for changes to the from address, so we can reset our error.
+                                    emailFrom.addEventListener('change', function() {
+                                        emailFrom.classList.remove('nf-field-error');
+                                        errorBox.innerHTML = '';
+                                    });
+                                }
+                            });
+                            // Listen for clicks on our Cancel button
+                            document.getElementById('nf-modal-cancel').addEventListener('click', function(){
+                               bulkBox.close(); 
+                            });
+                        }
+                    });
 				});
+                function nfscCheckEmail( el ){
+                    var emailReg = /^.+@.+\..+/i;
+                    var val = el.value;
+                    if( 'undefined' === typeof( val ) )
+                        return false;
+                    if( '' == val )
+                        return false;
+                    if( ! emailReg.test( val ) )
+                        return false;
+                    return true;
+                }
 			</script>
+            <style type="text/css">
+                .nfsc-composer {
+                    background-color: #fff;
+                    border-radius: 7px;
+                }
+                #jBox-overlay {
+                    background-color: #000;
+                    height: 100%;
+                    width: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    opacity: 0.6 !important;
+                }
+                .nfsc-composer label {
+                    display: block;
+                    font-size: 120%;
+                }
+                .nfsc-composer input, .nfsc-composer textarea {
+                    width: 100%;
+                    margin: 10px 0px;
+                }
+                .nfsc-composer textarea {
+                    min-height: 200px;
+                }
+                .nfsc-composer .jBox-title {
+                    text-align: center;
+                    font-size: 150%;
+                    padding: 30px 0px;
+                }
+                .nfsc-composer .jBox-content {
+                    padding: 10px 40px;
+                }
+                .nfsc-composer .modal-button {
+                    cursor: pointer;
+                    display: inline-block;
+                    width: 70px;
+                    height: 20px;
+                    padding: 5px 0px;
+                    text-align: center;
+                    border-radius: 3px;
+                }
+                .nfsc-composer #nf-modal-send {
+                    margin-left: 120px;
+                    background-color: #00a0d2;
+                    color: #fff;
+                }
+                .nfsc-composer #nf-modal-cancel {
+                    margin-left: 60px;
+                    background-color: #ccc;
+                }
+                .nfsc-composer #nf-bulk-error {
+                    color: #f00;
+                    font-weight: bold;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                }
+                .nfsc-composer input.nf-field-error {
+                    border: 1px solid #f00;
+                }
+                .nfsc-bulk-email {
+                    border: 1px solid #ccc;
+                    color: #0073aa;
+                    background-color: #f7f7f7;
+                    width: 150px;
+                    padding: 4px 8px;
+                    font-weight: 600;
+                    font-size: 13px;
+                    cursor: pointer;
+                    text-align: center;
+                    border-radius: 2px;
+                }
+                .nfsc-bulk-email:hover {
+                    background-color: #00a0d2;
+                    border-color: #008EC2;
+                    color: #fff;
+                }
+            </style>
 			<?php
 		}
 	}
+    
+    /**
+     * Setup our AJAX response.
+     * 
+     * @since 1.0
+     * @return void
+     */
+    public function bulk_conversion_email() {
+        if( !isset($_POST['data'] ) )
+            return false;
+        $data = json_decode( stripslashes( $_POST['data'] ), TRUE );
+//        var_dump($data);
+//        die();
+        $form_id = intval( $data['form_id'] );
+        $subject = empty( $data['subject'] ) ? '(No subject)' : $data['subject'];
+        $headers = array();
+        $headers[] = 'Content-Type: text/plain';
+        $headers[] = 'charset=UTF-8';
+        $headers[] = 'From: ' . $data['from'];
+        global $wpdb;
+        $post_sql = "SELECT p.id FROM `" . $wpdb->prefix ."posts` AS p LEFT JOIN `" . $wpdb->prefix ."postmeta` as m ON p.id = m.post_id WHERE m.meta_key = '_form_id' AND m.meta_value = " . $form_id;
+        $save_sql = "SELECT p.id FROM `" . $wpdb->prefix ."posts` AS p LEFT JOIN `" . $wpdb->prefix ."postmeta` as m ON p.id = m.post_id WHERE m.meta_key = '_action' AND m.meta_value = 'save' AND p.id IN(" . $post_sql . ")";
+        $sql = "SELECT DISTINCT(u.user_email) FROM `" . $wpdb->prefix ."users` as u  LEFT JOIN `" . $wpdb->prefix ."posts` as p ON u.id = p.post_author WHERE p.id IN(" . $save_sql . ") AND u.user_email IS NOT NULL";
+        $result = $wpdb->get_results( $sql, 'ARRAY_A' );
+        $to = array();
+        foreach( $result as $row ) {
+            array_push( $to, $row['user_email'] );
+        }
+//        var_dump($to);
+//        echo($subject);
+//        echo($data['message']);
+//        echo($from);
+        $errors = array();
+        try {
+            $sent = wp_mail( $to, $subject, $data['message'], $headers );
+        } catch ( Exception $e ){
+            $sent = false;
+            $errors[ 'email_sent' ] = $e->getMessage();
+        }
+        echo( $sent );
+        die();
+    }
     
     
     /**
