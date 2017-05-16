@@ -170,10 +170,10 @@ class NF_SaveConverter {
         
         $message = '<div class="update-nag nf-admin-notice">
                 <div class="nf-notice-logo"></div>
-                <p class="nf-notice-title" style="color:#ED494D;">Conversion Mode Activated!</p>
-                <p class="nf-notice-body">Only Saves are being shown on your Submissions page. To restore default functionality, disable Ninja Forms - Save Conversion Tool from your Plugins Menu.</p>
+                <p class="nf-notice-title" style="color:#ED494D;">' . __('Conversion Mode Activated!', 'ninja-forms') . '</p>
+                <p class="nf-notice-body">' . __('Only Saves are being shown on your Submissions page. To restore default functionality, disable Ninja Forms - Save Conversion Tool from your Plugins Menu.', 'ninja-forms') . '</p>
                 </div>';
-        _e( $message );
+        echo( $message );
         wp_enqueue_style( 'nf-admin-notices', NINJA_FORMS_URL .'assets/css/admin-notices.css?nf_ver=' . NF_PLUGIN_VERSION );
     }
     
@@ -196,8 +196,8 @@ class NF_SaveConverter {
                     // Create our Email Button.
                     jQuery('<div>').text('<?php _e('Email Users with Saves'); ?>').addClass('nfsc-bulk-email').appendTo("#wpbody-content");
                     // Add options to the bulk action list.
-                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action']");
-                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions')?>').appendTo("select[name='action2']");
+                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions', 'ninja-forms')?>').appendTo("select[name='action']");
+                    jQuery('<option>').val('convert_saves').text('<?php _e('Convert to Submissions', 'ninja-forms')?>').appendTo("select[name='action2']");
                     <?php
                     if ( ( isset ( $_POST['action'] ) && $_POST['action'] == 'convert_saves' ) || ( isset ( $_POST['action2'] ) && $_POST['action2'] == 'convert_saves' ) ) {
                         ?>
@@ -211,12 +211,12 @@ class NF_SaveConverter {
 
 					?>
                     // Setup our modal.
-                    var title = 'Composing Email to Users';
-                    var content = '<div><label for="nf-bulk-from">From Address:</label><input type="text" name="from" id="nf-bulk-from" /></div>' +
-                        '<div><label for="nf-bulk-subject">Subject:</label><input type="text" name="subject" id="nf-bulk-subject" /></div>' +
-                        '<div><label for="nf-bulk-message">Message:</label><textarea id="nf-bulk-message"></textarea></div>' +
+                    var title = '<?php _e('Composing Email to Users', 'ninja-forms'); ?>';
+                    var content = '<div><label for="nf-bulk-from"><?php _e('From Address:', 'ninja-forms'); ?></label><input type="text" name="from" id="nf-bulk-from" value="<?php echo( (get_option('admin_email')) ? get_option('admin_email') : '' ); ?>"/></div>' +
+                        '<div><label for="nf-bulk-subject"><?php _e('Subject:', 'ninja-forms'); ?></label><input type="text" name="subject" id="nf-bulk-subject" /></div>' +
+                        '<div><label for="nf-bulk-message"><?php _e('Message:', 'ninja-forms'); ?></label><textarea id="nf-bulk-message"><?php echo __('Hello,\n\nWe just wanted to let you know that we are upgrading our forms, and your saved information at [[PASTE FORM PAGE URL HERE]] could be lost if you do not return and complete it soon.\n\nSincerely,\n\nSupport', 'ninja-forms'); ?></textarea></div>' +
                         '<div id="nf-bulk-error"></div>'+
-                        '<div id="nf-modal-send" class="modal-button">Send</div><div id="nf-modal-cancel" class="modal-button">Cancel</div>';
+                        '<div id="nf-modal-send" class="modal-button"><?php _e('Send', 'ninja-forms'); ?></div><div id="nf-modal-cancel" class="modal-button"><?php _e('Cancel', 'ninja-forms'); ?></div>';
                     var bulkBox = new jBox('Modal', {
                         width: 440,
                         height: 500,
@@ -254,7 +254,7 @@ class NF_SaveConverter {
                                             bulkBox.close();
                                         },
                                         error: function( response ){
-                                            errorBox.innerHTML('Oops. Something went wrong.');
+                                            errorBox.innerHTML('<?php _e('Oops. Something went wrong.', 'ninja-forms'); ?>');
                                         }
                                     });
                                 }
@@ -380,7 +380,7 @@ class NF_SaveConverter {
             return false;
         $data = json_decode( stripslashes( $_POST['data'] ), TRUE );
         $form_id = intval( $data['form_id'] );
-        $subject = empty( $data['subject'] ) ? '(No subject)' : $data['subject'];
+        $subject = empty( $data['subject'] ) ? __('(No subject)', 'ninja-forms') : $data['subject'];
         $headers = array();
         $headers[] = 'Content-Type: text/plain';
         $headers[] = 'charset=UTF-8';
@@ -431,15 +431,15 @@ class NF_SaveConverter {
 				} else {
 					echo '<div class="row-actions custom-row-actions">';
 					do_action( 'nf_sub_table_before_row_actions_trash', $sub_id, $column );
-					echo '<span class="untrash"><a title="' . esc_attr( __( 'Restore this item from the Trash' ) ) . '" href="' . wp_nonce_url( sprintf( get_edit_post_link( $sub_id ) . '&amp;action=untrash', $sub_id ) , 'untrash-post_' . $sub_id ) . '">' . __( 'Restore' ) . '</a> | </span> 
-					<span class="delete"><a class="submitdelete" title="' . esc_attr( __( 'Delete this item permanently' ) ) . '" href="' . get_delete_post_link( $sub_id, '', true ) . '">' . __( 'Delete Permanently' ) . '</a></span>';
+					echo '<span class="untrash"><a title="' . esc_attr( __( 'Restore this item from the Trash', 'ninja-forms' ) ) . '" href="' . wp_nonce_url( sprintf( get_edit_post_link( $sub_id ) . '&amp;action=untrash', $sub_id ) , 'untrash-post_' . $sub_id ) . '">' . __( 'Restore', 'ninja-forms' ) . '</a> | </span> 
+					<span class="delete"><a class="submitdelete" title="' . esc_attr( __( 'Delete this item permanently', 'ninja-forms' ) ) . '" href="' . get_delete_post_link( $sub_id, '', true ) . '">' . __( 'Delete Permanently', 'ninja-forms' ) . '</a></span>';
 					do_action( 'nf_sub_table_after_row_actions_trash', $sub_id, $column );
 					echo '</div>';
 				}
 			} else if ( $column == 'sub_date' ) {
 				$post = get_post( $sub_id );
 				if ( '0000-00-00 00:00:00' == $post->post_date ) {
-					$t_time = $h_time = __( 'Unpublished' );
+					$t_time = $h_time = __( 'Unpublished', 'ninja-forms' );
 					$time_diff = 0;
 				} else {
 					$t_time = get_the_time( 'Y/m/d g:i:s A' );
@@ -449,7 +449,7 @@ class NF_SaveConverter {
 					$time_diff = time() - $time;
 
 					if ( $time_diff > 0 && $time_diff < DAY_IN_SECONDS )
-						$h_time = sprintf( __( '%s ago' ), human_time_diff( $time ) );
+						$h_time = sprintf( __( '%s ago', 'ninja-forms' ), human_time_diff( $time ) );
 					else
 						$h_time = mysql2date( 'Y/m/d', $m_time );
 				}
